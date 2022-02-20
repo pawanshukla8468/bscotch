@@ -5,14 +5,12 @@
   "compilerOptions": {
     "baseUrl": ".",
     "typeRoots": [],
-    "types": []
+    "types": [],
+    "composite": true
   },
   "references": [
     {
       "path": "./src/"
-    },
-    {
-      "path": "./gml/"
     }
   ]
 }

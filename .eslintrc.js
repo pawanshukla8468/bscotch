@@ -16,10 +16,12 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     '@typescript-eslint/ban-ts-comment': 'off',
-    '@typescript-eslint/no-unused-vars': 'error',
+    '@typescript-eslint/no-unused-vars': 'warn',
+    '@typescript-eslint/no-empty-interface': 'off',
     'comma-dangle': ['error', 'only-multiline'],
     'space-before-function-paren': 'off',
     '@typescript-eslint/triple-slash-reference': 'off',
+    '@typescript-eslint/ban-types': 'off',
     'key-spacing': 'off',
     quotes: 'off',
     eqeqeq: 'off',
@@ -31,6 +33,7 @@ module.exports = {
     'no-prototype-builtins': 'off',
     'no-redeclare': 'off',
     '@typescript-eslint/no-redeclare': ['error'],
+    'no-shadow-restricted-names': 'warn',
   },
   overrides: [
     {

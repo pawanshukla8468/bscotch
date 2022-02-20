@@ -1,9 +1,81 @@
-//#region SHIMS
+/// <reference no-default-lib="true"/>
+/// <reference path="./gml-lib.d.ts" />
 
-declare type struct = Record<string, any>;
-declare type int = number;
-declare type ds_list<T> = { _: T[] };
-declare type ds_map<K extends string, V> = { _: Record<K, V> };
+declare interface Exception {
+  /**
+   * short message for this exception
+   */
+  message: string;
+  /**
+   * longer message for this exception
+   */
+  longMessage: string;
+  /**
+   * where the exception came from
+   */
+  script: string;
+  /**
+   * line number where the exception came from
+   */
+  line: number;
+  /**
+   * stack frame the exception was generated
+   */
+  stacktrace: string[];
+}
+
+declare interface Struct extends Record<string, any> {}
+
+declare interface Int extends Number {
+  readonly kind: unique symbol;
+}
+
+declare interface Real extends Number {
+  readonly kind: unique symbol;
+}
+
+declare interface DsList<T> {
+  readonly kind: unique symbol;
+  _: T[];
+}
+
+declare class DsMap<K extends string, V> {
+  static readonly kind: unique symbol;
+  private map: Record<K, V>;
+}
+
+declare interface MpGrid {
+  readonly kind: unique symbol;
+}
+
+declare class DsGrid<Width = Int, Height = Int> {
+  static readonly kind: unique symbol;
+  private width: Width;
+  private height: Height;
+}
+
+declare class DsStack<T> {
+  static readonly kind: unique symbol;
+  private values: T[];
+}
+
+declare class DsQueue<T> {
+  static readonly kind: unique symbol;
+  private values: T[];
+}
+
+declare class DsPriority<T> {
+  static readonly kind: unique symbol;
+  private values: T[];
+}
+
+declare type DsType =
+  | typeof ds_type_map
+  | typeof ds_type_list
+  | typeof ds_type_stack
+  | typeof ds_type_queue
+  | typeof ds_type_grid
+  | typeof ds_type_priority;
 
 declare class GmlObject {
   /** This read-only variable holds the unique identifying number for the instance. Every instance that you create is given a number that is used internally to identify this instance and this variable is what you can use to reference it. The id is also returned (and can be stored in a variable) when an instance is created using instance_create_layer.
@@ -24,7 +96,7 @@ declare class GmlObject {
   public friction: number;
   public gravity: number;
   public gravity_direction: number;
-  public readonly path_index: paths;
+  public readonly path_index: Path;
   public path_position: number;
   public path_positionprevious: number;
   public path_speed: number;
@@ -35,23 +107,23 @@ declare class GmlObject {
     | typeof path_action_restart
     | typeof path_action_continue
     | typeof path_action_reverse;
-  public solid: bool;
-  public persistent: bool;
-  public mask_index: sprite;
+  public solid: boolean;
+  public persistent: boolean;
+  public mask_index: Sprite;
   /**
    * The number of active instances of this type in the room.
    */
-  public get instance_count(): int;
+  public get instance_count(): Int;
   /** This read only array holds all the ids of every active instance within the room. This means that if you have used any of the Instance Deactivate functions those instances that have been deactivated will not be included in this array (if you have used a value from this array previously, it will now return the keyword noone). */
   public readonly instance_id: number[];
 
-  public visible: bool;
-  public sprite_index: sprite;
-  public readonly sprite_width: int;
-  public readonly sprite_height: int;
+  public visible: boolean;
+  public sprite_index: Sprite;
+  public readonly sprite_width: Int;
+  public readonly sprite_height: Int;
   public readonly sprite_xoffset: number;
   public readonly sprite_yoffset: number;
-  public readonly image_number: int;
+  public readonly image_number: Int;
   public image_index: number;
   public image_speed: number;
   public depth: number;
@@ -65,12 +137,12 @@ declare class GmlObject {
   public readonly bbox_top: number;
   public readonly bbox_bottom: number;
 
-  public readonly alarm: ((this: instance) => void)[];
-  public timeline_index: timeline;
+  public readonly alarm: ((this: Instance) => void)[];
+  public timeline_index: Timeline;
   public timeline_position: number;
   public timeline_speed: number;
-  public timeline_running: bool;
-  public timeline_loop: bool;
+  public timeline_running: boolean;
+  public timeline_loop: boolean;
 
   public phy_rotation: number;
   public phy_position_x: number;
@@ -83,17 +155,17 @@ declare class GmlObject {
   public readonly phy_speed: number;
   public phy_angular_damping: number;
   public phy_linear_damping: number;
-  public phy_bullet: bool;
-  public phy_fixed_rotation: bool;
-  public phy_active: bool;
+  public phy_bullet: boolean;
+  public phy_fixed_rotation: boolean;
+  public phy_active: boolean;
   public readonly phy_mass: number;
   public readonly phy_inertia: number;
   public readonly phy_com_x: number;
   public readonly phy_com_y: number;
-  public readonly phy_dynamic: bool;
-  public readonly phy_kinematic: bool;
-  public readonly phy_sleeping: bool;
-  public readonly phy_collision_points: int;
+  public readonly phy_dynamic: boolean;
+  public readonly phy_kinematic: boolean;
+  public readonly phy_sleeping: boolean;
+  public readonly phy_collision_points: Int;
   public readonly phy_collision_x: number[];
   public readonly phy_collision_y: number[];
   public readonly phy_col_normal_x: number[];
@@ -102,26 +174,48 @@ declare class GmlObject {
   public readonly phy_position_yprevious: number;
 }
 
-declare type objects = typeof GmlObject;
-declare type instance = GmlObject;
+declare type Objects = typeof GmlObject;
+declare type Instance = GmlObject;
 
 ////#endregion
 
 //#region BASE TYPES
 
-declare type fonts = unknown;
-declare type paths = unknown;
-declare type rooms = unknown;
-declare type scripts = unknown;
-declare type sequences = unknown;
-declare type shaders = unknown;
-declare type sounds = unknown;
-declare type sprites = unknown;
-declare type tilesets = unknown;
-declare type timelines = unknown;
+declare interface Font {
+  readonly kind: unique symbol;
+}
+declare interface Path {
+  readonly kind: unique symbol;
+}
+declare interface Room {
+  readonly kind: unique symbol;
+}
+declare interface Script {
+  readonly kind: unique symbol;
+}
+declare interface Sequence {
+  readonly kind: unique symbol;
+}
+declare interface Shaders {
+  readonly kind: unique symbol;
+}
+declare interface Sound {
+  readonly kind: unique symbol;
+}
+declare interface Sprite {
+  readonly kind: unique symbol;
+}
+declare interface Tileset {
+  readonly kind: unique symbol;
+}
+declare interface Timeline {
+  readonly kind: unique symbol;
+}
 
-declare type weak_reference = unknown;
-declare type asset_type =
+declare interface WeakReference {
+  readonly kind: unique symbol;
+}
+declare type AssetType =
   | typeof asset_sequence
   | typeof asset_animationcurve
   | typeof asset_tiles
@@ -135,43 +229,57 @@ declare type asset_type =
   | typeof asset_font
   | typeof asset_timeline
   | typeof asset_shader;
-declare type network_type =
+declare type NetworkType =
   | typeof network_socket_ws
   | typeof network_socket_tcp
   | typeof network_socket_udp
   | typeof network_socket_bluetooth;
-declare type network_config =
+declare type NetworkConfig =
   | typeof network_config_avoid_time_wait
   | typeof network_config_connect_timeout
   | typeof network_config_use_non_blocking_socket
   | typeof network_config_enable_reliable_udp
   | typeof network_config_disable_reliable_udp;
-declare type buffer = unknown;
-declare type surface = typeof application_surface | typeof view_surface_id;
-declare type asset = unknown;
-declare type layer_sequence = unknown;
-declare type layer = unknown;
-declare type gamespeed_type =
+declare interface Buffer {
+  readonly kind: unique symbol;
+}
+declare type Surface = typeof application_surface;
+declare interface Asset {
+  readonly kind: unique symbol;
+}
+declare interface LayerSequence {
+  readonly kind: unique symbol;
+}
+declare interface Layer {
+  readonly kind: unique symbol;
+}
+declare type GamespeedType =
   | typeof gamespeed_fps
   | typeof gamespeed_microseconds;
-declare type bbox_mode =
+declare type BboxMode =
   | typeof bboxmode_automatic
   | typeof bboxmode_fullimage
   | typeof bboxmode_manual;
-declare type bbox_kind =
+declare type BboxKind =
   | typeof bboxkind_precise
   | typeof bboxkind_rectangular
   | typeof bboxkind_ellipse
   | typeof bboxkind_diamond;
-declare type gif = unknown;
-declare type camera = typeof view_camera;
-declare type sprite_speed_type =
+declare interface Gif {
+  readonly kind: unique symbol;
+}
+declare interface Camera {
+  readonly kind: unique symbol;
+}
+declare type SpriteSpeedType =
   | typeof spritespeed_framespersecond
   | typeof spritespeed_framespergameframe;
-declare type texture_group = unknown;
-declare type display_timing_method = typeof tm_sleep | typeof tm_countvsyncs;
-declare type draw_lighttype = typeof lighttype_dir | typeof lighttype_point;
-declare type gpu_cmpfunc =
+declare interface TextureGroup {
+  readonly kind: unique symbol;
+}
+declare type DisplayTimingMethod = typeof tm_sleep | typeof tm_countvsyncs;
+declare type DrawLighttype = typeof lighttype_dir | typeof lighttype_point;
+declare type GpuCmpfunc =
   | typeof cmpfunc_never
   | typeof cmpfunc_less
   | typeof cmpfunc_equal
@@ -180,16 +288,16 @@ declare type gpu_cmpfunc =
   | typeof cmpfunc_notequal
   | typeof cmpfunc_greaterequal
   | typeof cmpfunc_always;
-declare type gpu_cullmode =
+declare type GpuCullmode =
   | typeof cull_noculling
   | typeof cull_clockwise
   | typeof cull_counterclockwise;
-declare type blendmode =
+declare type Blendmode =
   | typeof bm_normal
   | typeof bm_add
   | typeof bm_max
   | typeof bm_subtract;
-declare type blendmode_ext =
+declare type BlendmodeExt =
   | typeof bm_zero
   | typeof bm_one
   | typeof bm_src_colour
@@ -205,17 +313,21 @@ declare type blendmode_ext =
   | typeof bm_dest_color
   | typeof bm_inv_dest_color
   | typeof bm_src_alpha_sat;
-declare type shader_sampler = unknown;
-declare type texture_mip_filter =
+declare interface ShaderSampler {
+  readonly kind: unique symbol;
+}
+declare type TextureMipFilter =
   | typeof tf_point
   | typeof tf_linear
   | typeof tf_anisotropic;
-declare type texture_mip_state =
+declare type TextureMipState =
   | typeof mip_off
   | typeof mip_on
   | typeof mip_markedonly;
-declare type layer_element = unknown;
-declare type layer_element_type =
+declare interface LayerElement {
+  readonly kind: unique symbol;
+}
+declare type LayerElementType =
   | typeof layerelementtype_undefined
   | typeof layerelementtype_background
   | typeof layerelementtype_instance
@@ -225,17 +337,27 @@ declare type layer_element_type =
   | typeof layerelementtype_particlesystem
   | typeof layerelementtype_tile
   | typeof layerelementtype_sequence;
-declare type layer_background = unknown;
-declare type layer_sprite = unknown;
-declare type layer_tile_legacy = unknown;
-declare type layer_instance = unknown;
-declare type layer_tilemap = unknown;
-declare type tilemap_data =
+declare interface LayerBackground {
+  readonly kind: unique symbol;
+}
+declare interface LayerSprite {
+  readonly kind: unique symbol;
+}
+declare interface LayerTileLegacy {
+  readonly kind: unique symbol;
+}
+declare interface LayerInstance {
+  readonly kind: unique symbol;
+}
+declare interface LayerTilemap {
+  readonly kind: unique symbol;
+}
+declare type TilemapData =
   | typeof tile_rotate
   | typeof tile_flip
   | typeof tile_mirror
   | typeof tile_index_mask;
-declare type virtual_keyboard_type =
+declare type VirtualKeyboardType =
   | typeof kbv_type_default
   | typeof kbv_type_ascii
   | typeof kbv_type_url
@@ -243,7 +365,7 @@ declare type virtual_keyboard_type =
   | typeof kbv_type_numbers
   | typeof kbv_type_phone
   | typeof kbv_type_phone_name;
-declare type virtual_keyboard_return_key =
+declare type VirtualKeyboardReturnKey =
   | typeof kbv_returnkey_default
   | typeof kbv_returnkey_go
   | typeof kbv_returnkey_google
@@ -256,17 +378,16 @@ declare type virtual_keyboard_return_key =
   | typeof kbv_returnkey_done
   | typeof kbv_returnkey_continue
   | typeof kbv_returnkey_emergency;
-declare type virtual_keyboard_autocapitalization =
+declare type VirtualKeyboardAutocapitalization =
   | typeof kbv_autocapitalize_none
   | typeof kbv_autocapitalize_words
   | typeof kbv_autocapitalize_sentences
   | typeof kbv_autocapitalize_characters;
-declare type pointer = typeof pointer_invalid | typeof pointer_null;
-declare type datetime = typeof GM_build_date;
-declare type timezone_type = typeof timezone_local | typeof timezone_utc;
-declare type mp_grid = unknown;
-declare type ds_grid = unknown;
-declare type event_type =
+declare type Pointer = typeof pointer_invalid | typeof pointer_null;
+declare type Datetime = typeof GM_build_date;
+declare type TimezoneType = typeof timezone_local | typeof timezone_utc;
+
+declare type EventType =
   | typeof ev_create
   | typeof ev_destroy
   | typeof ev_step
@@ -424,29 +545,30 @@ declare const event_number:
   | typeof ev_global_gesture_rotating
   | typeof ev_global_gesture_rotate_end;
 declare const mouse_button:
-  | typeof mouse_lastbutton
   | typeof mb_any
   | typeof mb_none
   | typeof mb_left
   | typeof mb_right
   | typeof mb_middle;
-declare type horizontal_alignment =
+declare type HorizontalAlignment =
   | typeof fa_left
   | typeof fa_center
   | typeof fa_right;
-declare type vertical_alignment =
+declare type VerticalAlignment =
   | typeof fa_top
   | typeof fa_middle
   | typeof fa_bottom;
-declare type primitive_type =
+declare type PrimitiveType =
   | typeof pr_pointlist
   | typeof pr_linelist
   | typeof pr_linestrip
   | typeof pr_trianglelist
   | typeof pr_trianglestrip
   | typeof pr_trianglefan;
-declare type texture = unknown;
-declare type audio_falloff_model =
+declare interface Texture {
+  readonly kind: unique symbol;
+}
+declare type AudioFalloffModel =
   | typeof audio_falloff_none
   | typeof audio_falloff_inverse_distance
   | typeof audio_falloff_inverse_distance_clamped
@@ -454,16 +576,16 @@ declare type audio_falloff_model =
   | typeof audio_falloff_linear_distance_clamped
   | typeof audio_falloff_exponent_distance
   | typeof audio_falloff_exponent_distance_clamped;
-declare type audio_sound_channel =
+declare type AudioSoundChannel =
   | typeof audio_mono
   | typeof audio_stereo
   | typeof audio_3d;
-declare type display_orientation =
+declare type DisplayOrientation =
   | typeof display_landscape
   | typeof display_landscape_flipped
   | typeof display_portrait
   | typeof display_portrait_flipped;
-declare type window_cursor =
+declare type WindowCursor =
   | typeof cr_default
   | typeof cr_none
   | typeof cr_arrow
@@ -479,11 +601,19 @@ declare type window_cursor =
   | typeof cr_appstart
   | typeof cr_handpoint
   | typeof cr_size_all;
-declare type audio_emitter = unknown;
-declare type sound_instance = unknown;
-declare type sound_sync_group = unknown;
-declare type audio_group = unknown;
-declare type buffer_type =
+declare interface AudioEmitter {
+  readonly kind: unique symbol;
+}
+declare interface SoundInstance {
+  readonly kind: unique symbol;
+}
+declare interface SoundSyncGroup {
+  readonly kind: unique symbol;
+}
+declare interface AudioGroup {
+  readonly kind: unique symbol;
+}
+declare type BufferType =
   | typeof buffer_u8
   | typeof buffer_s8
   | typeof buffer_u16
@@ -497,29 +627,29 @@ declare type buffer_type =
   | typeof buffer_bool
   | typeof buffer_text
   | typeof buffer_string;
-declare type sound_play_queue = unknown;
-declare type html_clickable_tpe = unknown;
-declare type html_clickable = unknown;
-declare type file_handle = unknown;
-declare type file_attribute =
+declare interface SoundPlayQueue {
+  readonly kind: unique symbol;
+}
+declare interface HtmlClickableTpe {
+  readonly kind: unique symbol;
+}
+declare interface HtmlClickable {
+  readonly kind: unique symbol;
+}
+declare interface FileHandle {
+  readonly kind: unique symbol;
+}
+declare type FileAttribute =
   | typeof fa_readonly
   | typeof fa_hidden
   | typeof fa_sysfile
   | typeof fa_volumeid
   | typeof fa_directory
   | typeof fa_archive;
-declare type binary_file_handle = unknown;
-declare type ds_type =
-  | typeof ds_type_map
-  | typeof ds_type_list
-  | typeof ds_type_stack
-  | typeof ds_type_queue
-  | typeof ds_type_grid
-  | typeof ds_type_priority;
-declare type ds_stack = unknown;
-declare type ds_queue = unknown;
-declare type ds_priority = unknown;
-declare type effect_kind =
+declare interface BinaryFileHandle {
+  readonly kind: unique symbol;
+}
+declare type EffectKind =
   | typeof ef_explosion
   | typeof ef_ring
   | typeof ef_ellipse
@@ -532,8 +662,10 @@ declare type effect_kind =
   | typeof ef_cloud
   | typeof ef_rain
   | typeof ef_snow;
-declare type particle = unknown;
-declare type particle_shape =
+declare interface Particle {
+  readonly kind: unique symbol;
+}
+declare type ParticleShape =
   | typeof pt_shape_pixel
   | typeof pt_shape_disk
   | typeof pt_shape_square
@@ -548,21 +680,27 @@ declare type particle_shape =
   | typeof pt_shape_cloud
   | typeof pt_shape_smoke
   | typeof pt_shape_snow;
-declare type particle_system = unknown;
-declare type particle_emitter = unknown;
-declare type particle_region_shape =
+declare interface ParticleSystem {
+  readonly kind: unique symbol;
+}
+declare interface ParticleEmitter {
+  readonly kind: unique symbol;
+}
+declare type ParticleRegionShape =
   | typeof ps_shape_rectangle
   | typeof ps_shape_ellipse
   | typeof ps_shape_diamond
   | typeof ps_shape_line;
-declare type particle_distribution =
+declare type ParticleDistribution =
   | typeof ps_distr_linear
   | typeof ps_distr_gaussian
   | typeof ps_distr_invgaussian;
-declare type external_call_type = typeof dll_cdecl | typeof dll_stdcall;
-declare type external_value_type = typeof ty_real | typeof ty_string;
-declare type external_function = unknown;
-declare type matrix_type =
+declare type ExternalCallType = typeof dll_cdecl | typeof dll_stdcall;
+declare type ExternalValueType = typeof ty_real | typeof ty_string;
+declare interface ExternalFunction {
+  readonly kind: unique symbol;
+}
+declare type MatrixType =
   | typeof matrix_view
   | typeof matrix_projection
   | typeof matrix_world;
@@ -580,7 +718,7 @@ declare const os_type:
   | typeof os_uwp
   | typeof os_tvos
   | typeof os_switch;
-declare type device_type =
+declare type DeviceType =
   | typeof os_device
   | typeof device_ios_unknown
   | typeof device_ios_iphone
@@ -592,7 +730,7 @@ declare type device_type =
   | typeof device_ios_iphone6plus
   | typeof device_emulator
   | typeof device_tablet;
-declare type browser_type =
+declare type BrowserType =
   | typeof os_browser
   | typeof browser_not_a_browser
   | typeof browser_unknown
@@ -606,19 +744,21 @@ declare type browser_type =
   | typeof browser_edge
   | typeof browser_windows_store
   | typeof browser_ie_mobile;
-declare type android_permission_state =
+declare type AndroidPermissionState =
   | typeof os_permission_denied_dont_request
   | typeof os_permission_denied
   | typeof os_permission_granted;
-declare type virtual_key = unknown;
-declare type achievement_leaderboard_filter =
+declare interface VirtualKey {
+  readonly kind: unique symbol;
+}
+declare type AchievementLeaderboardFilter =
   | typeof achievement_filter_all_players
   | typeof achievement_filter_friends_only
   | typeof achievement_filter_favorites_only;
-declare type achievement_challenge_type =
+declare type AchievementChallengeType =
   | typeof achievement_type_achievement_challenge
   | typeof achievement_type_score_challenge;
-declare type achievement_show_type =
+declare type AchievementShowType =
   | typeof achievement_show_ui
   | typeof achievement_show_profile
   | typeof achievement_show_leaderboard
@@ -626,37 +766,37 @@ declare type achievement_show_type =
   | typeof achievement_show_bank
   | typeof achievement_show_friend_picker
   | typeof achievement_show_purchase_prompt;
-declare type achievement_async_id =
+declare type AchievementAsyncId =
   | typeof achievement_our_info
   | typeof achievement_friends_info
   | typeof achievement_leaderboard_info
   | typeof achievement_achievement_info
   | typeof achievement_pic_loaded;
-declare type iap_async_id =
+declare type IapAsyncId =
   | typeof iap_data
   | typeof iap_ev_storeload
   | typeof iap_ev_product
   | typeof iap_ev_purchase
   | typeof iap_ev_consume
   | typeof iap_ev_restore;
-declare type iap_async_storeload =
+declare type IapAsyncStoreload =
   | typeof iap_storeload_ok
   | typeof iap_storeload_failed;
-declare type iap_system_status =
+declare type IapSystemStatus =
   | typeof iap_status_uninitialised
   | typeof iap_status_unavailable
   | typeof iap_status_loading
   | typeof iap_status_available
   | typeof iap_status_processing
   | typeof iap_status_restoring;
-declare type iap_order_status =
+declare type IapOrderStatus =
   | typeof iap_failed
   | typeof iap_unavailable
   | typeof iap_available
   | typeof iap_purchased
   | typeof iap_canceled
   | typeof iap_refunded;
-declare type gamepad_button =
+declare type GamepadButton =
   | typeof gp_face1
   | typeof gp_face2
   | typeof gp_face3
@@ -677,7 +817,7 @@ declare type gamepad_button =
   | typeof gp_axislv
   | typeof gp_axisrh
   | typeof gp_axisrv;
-declare type physics_debug_flag =
+declare type PhysicsDebugFlag =
   | typeof phy_debug_render_aabb
   | typeof phy_debug_render_collision_pairs
   | typeof phy_debug_render_coms
@@ -685,9 +825,13 @@ declare type physics_debug_flag =
   | typeof phy_debug_render_joints
   | typeof phy_debug_render_obb
   | typeof phy_debug_render_shapes;
-declare type physics_fixture = unknown;
-declare type physics_joint = unknown;
-declare type physics_joint_value =
+declare interface PhysicsFixture {
+  readonly kind: unique symbol;
+}
+declare interface PhysicsJoint {
+  readonly kind: unique symbol;
+}
+declare type PhysicsJointValue =
   | typeof phy_joint_anchor_1_x
   | typeof phy_joint_anchor_1_y
   | typeof phy_joint_anchor_2_x
@@ -713,7 +857,7 @@ declare type physics_joint_value =
   | typeof phy_joint_max_length
   | typeof phy_joint_max_torque
   | typeof phy_joint_max_force;
-declare type physics_particle_flag =
+declare type PhysicsParticleFlag =
   | typeof phy_particle_flag_water
   | typeof phy_particle_flag_zombie
   | typeof phy_particle_flag_wall
@@ -724,63 +868,77 @@ declare type physics_particle_flag =
   | typeof phy_particle_flag_tensile
   | typeof phy_particle_flag_colourmixing
   | typeof phy_particle_flag_colormixing;
-declare type physics_particle = unknown;
-declare type physics_particle_data_flag =
+declare interface PhysicsParticle {
+  readonly kind: unique symbol;
+}
+declare type PhysicsParticleDataFlag =
   | typeof phy_particle_data_flag_typeflags
   | typeof phy_particle_data_flag_position
   | typeof phy_particle_data_flag_velocity
-  | typeof phy_particle_data_flag_colour
-  | typeof phy_particle_data_flag_color
   | typeof phy_particle_data_flag_category;
-declare type physics_particle_group_flag =
+declare type PhysicsParticleGroupFlag =
   | typeof phy_particle_group_flag_solid
   | typeof phy_particle_group_flag_rigid;
-declare type physics_particle_group = unknown;
-declare type network_socket = unknown;
-declare type network_server = unknown;
-declare type network_async_id =
+declare interface PhysicsParticleGroup {
+  readonly kind: unique symbol;
+}
+declare interface NetworkSocket {
+  readonly kind: unique symbol;
+}
+declare interface NetworkServer {
+  readonly kind: unique symbol;
+}
+declare type NetworkAsyncId =
   | typeof network_type_connect
   | typeof network_type_disconnect
   | typeof network_type_data
   | typeof network_type_non_blocking_connect;
-declare type buffer_kind =
+declare type BufferKind =
   | typeof buffer_fixed
   | typeof buffer_grow
   | typeof buffer_wrap
   | typeof buffer_fast
   | typeof buffer_vbuffer;
-declare type buffer_auto_type = unknown;
-declare type buffer_seek_base =
+declare interface BufferAutoType {
+  readonly kind: unique symbol;
+}
+declare type BufferSeekBase =
   | typeof buffer_seek_start
   | typeof buffer_seek_relative
   | typeof buffer_seek_end;
-declare type vertex_buffer = unknown;
-declare type steam_overlay_page =
+declare interface VertexBuffer {
+  readonly kind: unique symbol;
+}
+declare type SteamOverlayPage =
   | typeof ov_friends
   | typeof ov_community
   | typeof ov_players
   | typeof ov_settings
   | typeof ov_gamegroup
   | typeof ov_achievements;
-declare type steam_leaderboard_sort_type =
+declare type SteamLeaderboardSortType =
   | typeof lb_sort_none
   | typeof lb_sort_ascending
   | typeof lb_sort_descending;
-declare type steam_leaderboard_display_type =
+declare type SteamLeaderboardDisplayType =
   | typeof lb_disp_none
   | typeof lb_disp_numeric
   | typeof lb_disp_time_sec
   | typeof lb_disp_time_ms;
-declare type steam_id = unknown;
-declare type steam_ugc = unknown;
-declare type steam_ugc_type =
+declare interface SteamId {
+  readonly kind: unique symbol;
+}
+declare interface SteamUgc {
+  readonly kind: unique symbol;
+}
+declare type SteamUgcType =
   | typeof ugc_filetype_community
   | typeof ugc_filetype_microtrans;
-declare type steam_ugc_visibility =
+declare type SteamUgcVisibility =
   | typeof ugc_visibility_public
   | typeof ugc_visibility_friends_only
   | typeof ugc_visibility_private;
-declare type steam_ugc_query_list_type =
+declare type SteamUgcQueryListType =
   | typeof ugc_list_Published
   | typeof ugc_list_VotedOn
   | typeof ugc_list_VotedUp
@@ -790,7 +948,7 @@ declare type steam_ugc_query_list_type =
   | typeof ugc_list_Subscribed
   | typeof ugc_list_UsedOrPlayed
   | typeof ugc_list_Followed;
-declare type steam_ugc_query_match_type =
+declare type SteamUgcQueryMatchType =
   | typeof ugc_match_Items
   | typeof ugc_match_Items_Mtx
   | typeof ugc_match_Items_ReadyToUse
@@ -803,7 +961,7 @@ declare type steam_ugc_query_match_type =
   | typeof ugc_match_IntegratedGuides
   | typeof ugc_match_UsableInGame
   | typeof ugc_match_ControllerBindings;
-declare type steam_ugc_query_sort_order =
+declare type SteamUgcQuerySortOrder =
   | typeof ugc_sortorder_CreationOrderDesc
   | typeof ugc_sortorder_CreationOrderAsc
   | typeof ugc_sortorder_TitleAsc
@@ -811,7 +969,7 @@ declare type steam_ugc_query_sort_order =
   | typeof ugc_sortorder_SubscriptionDateDesc
   | typeof ugc_sortorder_VoteScoreDesc
   | typeof ugc_sortorder_ForModeration;
-declare type steam_ugc_query_type =
+declare type SteamUgcQueryType =
   | typeof ugc_query_RankedByVote
   | typeof ugc_query_RankedByPublicationDate
   | typeof ugc_query_AcceptedForGameRankedByAcceptanceDate
@@ -824,11 +982,17 @@ declare type steam_ugc_query_type =
   | typeof ugc_query_RankedByTotalVotesAsc
   | typeof ugc_query_RankedByVotesUp
   | typeof ugc_query_RankedByTextSearch;
-declare type steam_ugc_query = unknown;
-declare type steam_ugc_async_result = typeof ugc_result_success;
-declare type shader_uniform = unknown;
-declare type vertex_format = unknown;
-declare type vertex_type =
+declare interface SteamUgcQuery {
+  readonly kind: unique symbol;
+}
+declare type SteamUgcAsyncResult = typeof ugc_result_success;
+declare interface ShaderUniform {
+  readonly kind: unique symbol;
+}
+declare interface VertexFormat {
+  readonly kind: unique symbol;
+}
+declare type VertexType =
   | typeof vertex_type_float1
   | typeof vertex_type_float2
   | typeof vertex_type_float3
@@ -836,7 +1000,7 @@ declare type vertex_type =
   | typeof vertex_type_colour
   | typeof vertex_type_color
   | typeof vertex_type_ubyte4;
-declare type vertex_usage =
+declare type VertexUsage =
   | typeof vertex_usage_position
   | typeof vertex_usage_colour
   | typeof vertex_usage_color
@@ -854,277 +1018,280 @@ declare type vertex_usage =
 
 //#region VARIABLE TYPES
 
-declare let mask_index: sprites;
-declare let cursor_sprite: sprites;
-declare let sprite_index: sprites;
-declare let timeline_index: timelines;
-declare let room_first: rooms;
-declare let room_last: rooms;
+declare let mask_index: Sprite;
+declare let cursor_sprite: Sprite;
+declare let sprite_index: Sprite;
+declare let timeline_index: Timeline;
+declare let room_first: Room;
+declare let room_last: Room;
 //#endregion
 
 //#region FUNCTION TYPES
 
-declare function is_struct(val: any): bool;
-declare function is_method(val: any): bool;
+declare function is_struct(val: any): boolean;
+declare function is_method(val: any): boolean;
 declare function exception_unhandled_handler(
-  user_handler: (arg0: Exception, arg1: any | void) => any,
+  user_handler: (arg0: Exception, arg1: any | void) => any
 ): any;
-declare function variable_struct_exists<T extends struct>(
+declare function variable_struct_exists<T extends Struct>(
   struct: T,
-  name: string,
-): bool;
-declare function variable_struct_get<T extends struct>(
+  name: string
+): boolean;
+declare function variable_struct_get<T extends Struct>(
   struct: T,
-  name: string,
+  name: string
 ): any;
-declare function variable_struct_set<T extends struct>(
+declare function variable_struct_set<T extends Struct>(
   struct: T,
   name: string,
-  val: any,
+  val: any
 ): void;
-declare function variable_struct_get_names<T extends struct>(
-  struct: T,
+declare function variable_struct_get_names<T extends Struct>(
+  struct: T
 ): string[];
-declare function variable_struct_names_count<T extends struct>(struct: T): int;
-declare function variable_struct_remove<T extends struct>(
+declare function variable_struct_names_count<T extends Struct>(struct: T): Int;
+declare function variable_struct_remove<T extends Struct>(
   struct: T,
-  name: string,
+  name: string
 ): void;
-declare function array_length<T extends any>(variable: T[]): int;
-declare function array_resize<T extends any>(variable: T[], newsize: int): void;
+declare function array_length<T extends any>(variable: T[]): Int;
+declare function array_resize<T extends any>(variable: T[], newsize: Int): void;
 declare function array_push<T extends any>(array: T[], ...values: T[]): void;
 declare function array_pop<T extends any>(array: T[]): T;
 declare function array_insert<T extends any>(
   array: T[],
-  index: int,
+  index: Int,
   ...values: T[]
 ): void;
 declare function array_delete<T extends any>(
   array: T[],
-  index: int,
-  number: int,
+  index: Int,
+  number: Int
 ): void;
 declare function array_sort<T extends any>(
   array: T[],
-  sortType_or_function: bool | ((arg0: T, arg1: T, arg2: int) => any),
+  sortType_or_function: boolean | ((arg0: T, arg1: T, arg2: Int) => any)
 ): void;
-declare function weak_ref_create<T extends struct>(
-  thing_to_track: T,
-): weak_reference;
-declare function weak_ref_alive(weak_ref: weak_reference): bool;
+declare function weak_ref_create<T extends Struct>(
+  thing_to_track: T
+): WeakReference;
+declare function weak_ref_alive(weak_ref: WeakReference): boolean;
 declare function weak_ref_any_alive(
-  array: weak_reference[],
-  index?: int,
-  length?: int,
-): bool;
-declare function method<T extends function>(
-  context: instance | struct | undefined,
-  func: T,
+  array: WeakReference[],
+  index?: Int,
+  length?: Int
+): boolean;
+declare function method<T extends Function>(
+  context: Instance | Struct | undefined,
+  func: T
 ): T;
 declare function method_get_index(method: any): any;
 declare function method_get_self(method: any): any;
 declare function string_pos_ext(
   substr: string,
   str: string,
-  startpos: int,
-): int;
-declare function string_last_pos(substr: string, str: string): int;
+  startpos: Int
+): Int;
+declare function string_last_pos(substr: string, str: string): Int;
 declare function string_last_pos_ext(
   substr: string,
   str: string,
-  startpos: int,
-): int;
-declare function debug_get_callstack(maxDepth?: int): string[];
+  startpos: Int
+): Int;
+declare function debug_get_callstack(maxDepth?: Int): string[];
+
+/**
+ * @param [offset=0]
+ * @param [num_args=args_length - offset]
+ */
 declare function script_execute_ext(
-  ind: scripts,
+  ind: Script,
   args: any[],
-  offset: int = 0,
-  num_args: int = args_length - offset,
+  offset?: Int,
+  num_args?: Int
 ): any;
 declare function ds_list_is_map<T extends any>(
-  list: ds_list<T>,
-  pos: int,
-): bool;
+  list: DsList<T>,
+  pos: Int
+): boolean;
 declare function ds_list_is_list<T extends any>(
-  list: ds_list<T>,
-  pos: int,
-): bool;
-declare function ds_map_values_to_array<K, V extends any>(
-  map: ds_map<K, V>,
-  arg1?: K[],
+  list: DsList<T>,
+  pos: Int
+): boolean;
+declare function ds_map_values_to_array<K extends string, V extends any>(
+  map: DsMap<K, V>,
+  arg1?: K[]
 ): K[];
-declare function ds_map_keys_to_array<K, V extends any>(
-  map: ds_map<K, V>,
-  arg1?: V[],
+declare function ds_map_keys_to_array<K extends string, V extends any>(
+  map: DsMap<K, V>,
+  arg1?: V[]
 ): V[];
-declare function ds_map_is_map<K, V extends any>(
-  map: ds_map<K, V>,
-  key: K,
-): bool;
-declare function ds_map_is_list<K, V extends any>(
-  map: ds_map<K, V>,
-  key: K,
-): bool;
+declare function ds_map_is_map<K extends string, V extends any>(
+  map: DsMap<K, V>,
+  key: K
+): boolean;
+declare function ds_map_is_list<K extends string, V extends any>(
+  map: DsMap<K, V>,
+  key: K
+): boolean;
 declare function json_stringify<
-  T extends struct | Array | number | string | undefined,
+  T extends Struct | any[] | number | string | undefined
 >(val: T): string;
 declare function json_parse(json: string): any;
 declare function buffer_get_surface(
-  buffer: buffer,
-  surface: surface,
-  offset: int,
+  buffer: Buffer,
+  Surface: Surface,
+  offset: Int
 ): void;
 declare function buffer_set_surface(
-  buffer: buffer,
-  surface: surface,
-  offset: int,
+  buffer: Buffer,
+  Surface: Surface,
+  offset: Int
 ): void;
 declare function tag_get_asset_ids(
   tags: string | string[],
-  asset_type: asset_type,
-): asset[];
+  asset_type: AssetType
+): Asset[];
 declare function tag_get_assets(tags: string | string[]): string[];
 declare function asset_get_tags(
-  asset_name_or_id: string | asset,
-  asset_type?: asset_type,
+  asset_name_or_id: string | Asset,
+  asset_type?: AssetType
 ): string[];
 declare function asset_add_tags(
-  asset_name_or_id: string | asset,
+  asset_name_or_id: string | Asset,
   tags: string | string[],
-  asset_type?: asset_type,
-): bool;
+  asset_type?: AssetType
+): boolean;
 declare function asset_remove_tags(
-  asset_name_or_id: string | asset,
+  asset_name_or_id: string | Asset,
   tags: string | string[],
-  asset_type?: asset_type,
-): bool;
+  asset_type?: AssetType
+): boolean;
 declare function asset_has_tags(
-  asset_name_or_id: string | asset,
+  asset_name_or_id: string | Asset,
   tags: string | string[],
-  asset_type?: asset_type,
-): bool;
+  asset_type?: AssetType
+): boolean;
 declare function asset_has_any_tag(
-  asset_name_or_id: string | asset,
+  asset_name_or_id: string | Asset,
   tags: string | string[],
-  asset_type?: asset_type,
-): bool;
+  asset_type?: AssetType
+): boolean;
 declare function asset_clear_tags(
-  asset_name_or_id: string | asset,
-  asset_type?: asset_type,
-): bool;
+  asset_name_or_id: string | Asset,
+  asset_type?: AssetType
+): boolean;
 declare function layer_sequence_get_instance(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): any;
 declare function layer_sequence_create(
-  layer_id: layer | string,
+  layer_id: Layer | string,
   x: number,
   y: number,
-  sequence_id: sequences,
-): layer_sequence;
+  sequence_id: Sequence
+): LayerSequence;
 declare function layer_sequence_destroy(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): void;
 declare function layer_sequence_exists(
-  layer_id: layer | string,
-  sequence_element_id: layer_sequence,
-): bool;
+  layer_id: Layer | string,
+  sequence_element_id: LayerSequence
+): boolean;
 declare function layer_sequence_x(
-  sequence_element_id: layer_sequence,
-  pos_x: number,
+  sequence_element_id: LayerSequence,
+  pos_x: number
 ): void;
 declare function layer_sequence_y(
-  sequence_element_id: layer_sequence,
-  pos_y: number,
+  sequence_element_id: LayerSequence,
+  pos_y: number
 ): void;
 declare function layer_sequence_angle(
-  sequence_element_id: layer_sequence,
-  angle: number,
+  sequence_element_id: LayerSequence,
+  angle: number
 ): void;
 declare function layer_sequence_xscale(
-  sequence_element_id: layer_sequence,
-  xscale: number,
+  sequence_element_id: LayerSequence,
+  xscale: number
 ): void;
 declare function layer_sequence_yscale(
-  sequence_element_id: layer_sequence,
-  yscale: number,
+  sequence_element_id: LayerSequence,
+  yscale: number
 ): void;
 declare function layer_sequence_headpos(
-  sequence_element_id: layer_sequence,
-  position: number,
+  sequence_element_id: LayerSequence,
+  position: number
 ): void;
 declare function layer_sequence_headdir(
-  sequence_element_id: layer_sequence,
-  direction: number,
+  sequence_element_id: LayerSequence,
+  direction: number
 ): void;
-declare function layer_sequence_pause(
-  sequence_element_id: layer_sequence,
-): void;
-declare function layer_sequence_play(sequence_element_id: layer_sequence): void;
+declare function layer_sequence_pause(sequence_element_id: LayerSequence): void;
+declare function layer_sequence_play(sequence_element_id: LayerSequence): void;
 declare function layer_sequence_speedscale(
-  sequence_element_id: layer_sequence,
-  speedscale: number,
+  sequence_element_id: LayerSequence,
+  speedscale: number
 ): void;
 declare function layer_sequence_get_x(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): number;
 declare function layer_sequence_get_y(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): number;
 declare function layer_sequence_get_angle(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): number;
 declare function layer_sequence_get_xscale(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): number;
 declare function layer_sequence_get_yscale(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): number;
 declare function layer_sequence_get_headpos(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): number;
 declare function layer_sequence_get_headdir(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): number;
 declare function layer_sequence_get_sequence(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): any;
 declare function layer_sequence_is_paused(
-  sequence_element_id: layer_sequence,
-): bool;
+  sequence_element_id: LayerSequence
+): boolean;
 declare function layer_sequence_is_finished(
-  sequence_element_id: layer_sequence,
-): bool;
+  sequence_element_id: LayerSequence
+): boolean;
 declare function layer_sequence_get_speedscale(
-  sequence_element_id: layer_sequence,
+  sequence_element_id: LayerSequence
 ): number;
 declare function layer_sequence_get_length(
-  sequence_element_id: layer_sequence,
-): int;
+  sequence_element_id: LayerSequence
+): Int;
 declare function gc_collect(): void;
 declare function gc_enable(enable: boolean): void;
-declare function gc_is_enabled(): bool;
+declare function gc_is_enabled(): boolean;
 declare function gc_get_stats(): any;
-declare function gc_target_frame_time(time: int): void;
-declare function gc_get_target_frame_time(): int;
-declare function is_nan(val: any): bool;
-declare function is_infinity(val: any): bool;
-declare function variable_instance_get_names<T extends instance>(
-  id: T,
+declare function gc_target_frame_time(time: Int): void;
+declare function gc_get_target_frame_time(): Int;
+declare function is_nan(val: any): boolean;
+declare function is_infinity(val: any): boolean;
+declare function variable_instance_get_names<T extends Instance>(
+  id: T
 ): string[];
-declare function variable_instance_names_count<T extends instance>(id: T): int;
+declare function variable_instance_names_count<T extends Instance>(id: T): Int;
 declare function string_hash_to_newline(str: string): string;
-declare function game_set_speed(value: number, type: gamespeed_type): void;
-declare function game_get_speed(type: gamespeed_type): number;
-declare function collision_point_list<T extends objects>(
+declare function game_set_speed(value: number, type: GamespeedType): void;
+declare function game_get_speed(type: GamespeedType): number;
+declare function collision_point_list<T extends Objects>(
   x: number,
   y: number,
   obj: T,
   prec: boolean,
   notme: boolean,
-  list: ds_list<T>,
-  ordered: boolean,
-): int;
-declare function collision_rectangle_list<T extends objects>(
+  list: DsList<T>,
+  ordered: boolean
+): Int;
+declare function collision_rectangle_list<T extends Objects>(
   x1: number,
   y1: number,
   x2: number,
@@ -1132,20 +1299,20 @@ declare function collision_rectangle_list<T extends objects>(
   obj: T,
   prec: boolean,
   notme: boolean,
-  list: ds_list<T>,
-  ordered: boolean,
-): int;
-declare function collision_circle_list<T extends objects>(
+  list: DsList<T>,
+  ordered: boolean
+): Int;
+declare function collision_circle_list<T extends Objects>(
   x1: number,
   y1: number,
   radius: number,
   obj: T,
   prec: boolean,
   notme: boolean,
-  list: ds_list<T>,
-  ordered: boolean,
-): int;
-declare function collision_ellipse_list<T extends objects>(
+  list: DsList<T>,
+  ordered: boolean
+): Int;
+declare function collision_ellipse_list<T extends Objects>(
   x1: number,
   y1: number,
   x2: number,
@@ -1153,10 +1320,10 @@ declare function collision_ellipse_list<T extends objects>(
   obj: T,
   prec: boolean,
   notme: boolean,
-  list: ds_list<T>,
-  ordered: boolean,
-): int;
-declare function collision_line_list<T extends objects>(
+  list: DsList<T>,
+  ordered: boolean
+): Int;
+declare function collision_line_list<T extends Objects>(
   x1: number,
   y1: number,
   x2: number,
@@ -1164,55 +1331,55 @@ declare function collision_line_list<T extends objects>(
   obj: T,
   prec: boolean,
   notme: boolean,
-  list: ds_list<T>,
-  ordered: boolean,
-): int;
-declare function instance_position_list<T extends objects>(
+  list: DsList<T>,
+  ordered: boolean
+): Int;
+declare function instance_position_list<T extends Objects>(
   x: number,
   y: number,
   obj: T,
-  list: ds_list<T>,
-  ordered: boolean,
-): int;
-declare function instance_place_list<T extends objects>(
+  list: DsList<T>,
+  ordered: boolean
+): Int;
+declare function instance_place_list<T extends Objects>(
   x: number,
   y: number,
   obj: T,
-  list: ds_list<T>,
-  ordered: boolean,
-): int;
-declare function gif_open(width: int, height: int, clear_color: int): gif;
+  list: DsList<T>,
+  ordered: boolean
+): Int;
+declare function gif_open(width: Int, height: Int, clear_color: Int): Gif;
 declare function gif_add_surface(
-  gifindex: gif,
-  surfaceindex: surface,
-  delaytime: int,
-  [xoffset]: int,
-  [yoffset]: int,
-  [quantization]: int,
-): int;
-declare function gif_save(gif: gif, filename: string): int;
-declare function gif_save_buffer(gif: gif): buffer;
+  gifindex: Gif,
+  surfaceindex: Surface,
+  delaytime: Int,
+  xoffset?: Int,
+  yoffset?: Int,
+  quantization?: Int
+): Int;
+declare function gif_save(Gif: Gif, filename: string): Int;
+declare function gif_save_buffer(Gif: Gif): Buffer;
 declare function sprite_set_speed(
-  ind: sprites,
+  ind: Sprite,
   speed: number,
-  type: sprite_speed_type,
+  type: SpriteSpeedType
 ): void;
-declare function sprite_get_speed_type(ind: sprites): sprite_speed_type;
-declare function sprite_get_speed(ind: sprites): number;
-declare function texture_is_ready(tex_id: texture_group | string): bool;
+declare function sprite_get_speed_type(ind: Sprite): SpriteSpeedType;
+declare function sprite_get_speed(ind: Sprite): number;
+declare function texture_is_ready(tex_id: TextureGroup | string): boolean;
 declare function texture_prefetch(
-  tex_id_or_groupname: texture_group | string,
+  tex_id_or_groupname: TextureGroup | string
 ): void;
 declare function texture_flush(
-  tex_id_or_groupname: texture_group | string,
+  tex_id_or_groupname: TextureGroup | string
 ): void;
-declare function texturegroup_get_textures(groupname: string): texture_group[];
-declare function texturegroup_get_sprites(groupname: string): sprites[];
-declare function texturegroup_get_fonts(groupname: string): fonts[];
-declare function texturegroup_get_tilesets(groupname: string): tilesets[];
+declare function texturegroup_get_textures(groupname: string): TextureGroup[];
+declare function texturegroup_get_sprites(groupname: string): Sprite[];
+declare function texturegroup_get_fonts(groupname: string): Font[];
+declare function texturegroup_get_tilesets(groupname: string): Tileset[];
 declare function texture_debug_messages(debug_level: boolean): void;
-declare function room_get_camera(ind: rooms, vind: int): camera;
-declare function room_set_camera(ind: rooms, vind: int, camera: camera): void;
+declare function room_get_camera(ind: Room, vind: Int): Camera;
+declare function room_set_camera(ind: Room, vind: Int, Camera: Camera): void;
 declare function matrix_build_identity(): number[];
 declare function matrix_build_lookat(
   xfrom: number,
@@ -1223,641 +1390,629 @@ declare function matrix_build_lookat(
   zto: number,
   xup: number,
   yup: number,
-  zup: number,
+  zup: number
 ): number[];
 declare function matrix_build_projection_ortho(
   width: number,
   height: number,
   znear: number,
-  zfar: number,
+  zfar: number
 ): number[];
 declare function matrix_build_projection_perspective(
   width: number,
   height: number,
   znear: number,
-  zfar: number,
+  zfar: number
 ): number[];
 declare function matrix_build_projection_perspective_fov(
   fov_y: number,
   aspect: number,
   znear: number,
-  zfar: number,
+  zfar: number
 ): number[];
 declare function matrix_transform_vertex(
   matrix: number[],
   x: number,
   y: number,
-  z: number,
+  z: number
 ): number[];
 declare function matrix_stack_push(matrix: number[]): void;
 declare function matrix_stack_pop(): void;
 declare function matrix_stack_set(matrix: number[]): void;
 declare function matrix_stack_clear(): void;
 declare function matrix_stack_top(): number[];
-declare function matrix_stack_is_empty(): bool;
-declare function display_set_timing_method(method: display_timing_method): void;
-declare function display_get_timing_method(): display_timing_method;
+declare function matrix_stack_is_empty(): boolean;
+declare function display_set_timing_method(method: DisplayTimingMethod): void;
+declare function display_get_timing_method(): DisplayTimingMethod;
 declare function display_set_sleep_margin(milliseconds: number): void;
 declare function display_get_sleep_margin(): number;
 declare function gpu_set_blendenable(enable: boolean): void;
 declare function gpu_set_ztestenable(enable: boolean): void;
-declare function gpu_set_zfunc(cmp_func: gpu_cmpfunc): void;
-declare function gpu_get_zfunc(): gpu_cmpfunc;
-declare function gpu_set_cullmode(cullmode: gpu_cullmode): void;
-declare function gpu_get_cullmode(): gpu_cullmode;
+declare function gpu_set_zfunc(cmp_func: GpuCmpfunc): void;
+declare function gpu_get_zfunc(): GpuCmpfunc;
+declare function gpu_set_cullmode(cullmode: GpuCullmode): void;
+declare function gpu_get_cullmode(): GpuCullmode;
 declare function gpu_set_zwriteenable(enable: boolean): void;
 declare function gpu_set_fog(
-  array_or_enable: bool | any[],
+  array_or_enable: boolean | any[],
   col?: number,
   start?: number,
-  end?: number,
+  end?: number
 ): void;
-declare function gpu_set_blendmode(mode: blendmode): void;
+declare function gpu_set_blendmode(mode: Blendmode): void;
 declare function gpu_set_blendmode_ext(
-  src: blendmode_ext,
-  dest: blendmode_ext,
+  src: BlendmodeExt,
+  dest: BlendmodeExt
 ): void;
 declare function gpu_set_blendmode_ext_sepalpha(
-  src: blendmode_ext,
-  dest: blendmode_ext,
-  srcalpha: blendmode_ext,
-  destalpha: blendmode_ext,
+  src: BlendmodeExt,
+  dest: BlendmodeExt,
+  srcalpha: BlendmodeExt,
+  destalpha: BlendmodeExt
 ): void;
 declare function gpu_set_colorwriteenable(
-  red_or_array: bool | bool[],
+  red_or_array: boolean | boolean[],
   green?: boolean,
   blue?: boolean,
-  alpha?: boolean,
+  alpha?: boolean
 ): void;
 declare function gpu_set_colourwriteenable(
-  red_or_array: bool | bool[],
+  red_or_array: boolean | boolean[],
   green?: boolean,
   blue?: any,
-  alpha?: boolean,
+  alpha?: boolean
 ): void;
 declare function gpu_set_alphatestenable(enable: boolean): void;
-declare function gpu_set_alphatestref(value: int): void;
+declare function gpu_set_alphatestref(value: Int): void;
 declare function gpu_set_texfilter(linear: boolean): void;
 declare function gpu_set_texfilter_ext(
-  sampler_id: shader_sampler,
-  linear: boolean,
+  sampler_id: ShaderSampler,
+  linear: boolean
 ): void;
 declare function gpu_set_texrepeat(repeat: boolean): void;
 declare function gpu_set_texrepeat_ext(
-  sampler_id: shader_sampler,
-  repeat: boolean,
+  sampler_id: ShaderSampler,
+  repeat: boolean
 ): void;
 declare function gpu_set_tex_filter(linear: boolean): void;
 declare function gpu_set_tex_filter_ext(
-  sampler_id: shader_sampler,
-  linear: boolean,
+  sampler_id: ShaderSampler,
+  linear: boolean
 ): void;
 declare function gpu_set_tex_repeat(repeat: boolean): void;
 declare function gpu_set_tex_repeat_ext(
-  sampler_id: shader_sampler,
-  repeat: boolean,
+  sampler_id: ShaderSampler,
+  repeat: boolean
 ): void;
-declare function gpu_set_tex_mip_filter(filter: texture_mip_filter): void;
+declare function gpu_set_tex_mip_filter(filter: TextureMipFilter): void;
 declare function gpu_set_tex_mip_filter_ext(
-  sampler_id: shader_sampler,
-  filter: texture_mip_filter,
+  sampler_id: ShaderSampler,
+  filter: TextureMipFilter
 ): void;
 declare function gpu_set_tex_mip_bias(bias: number): void;
 declare function gpu_set_tex_mip_bias_ext(
-  sampler_id: shader_sampler,
-  bias: number,
+  sampler_id: ShaderSampler,
+  bias: number
 ): void;
-declare function gpu_set_tex_min_mip(minmip: int): void;
+declare function gpu_set_tex_min_mip(minmip: Int): void;
 declare function gpu_set_tex_min_mip_ext(
-  sampler_id: shader_sampler,
-  minmip: int,
+  sampler_id: ShaderSampler,
+  minmip: Int
 ): void;
-declare function gpu_set_tex_max_mip(maxmip: int): void;
+declare function gpu_set_tex_max_mip(maxmip: Int): void;
 declare function gpu_set_tex_max_mip_ext(
-  sampler_id: shader_sampler,
-  maxmip: int,
+  sampler_id: ShaderSampler,
+  maxmip: Int
 ): void;
-declare function gpu_set_tex_max_aniso(maxaniso: int): void;
+declare function gpu_set_tex_max_aniso(maxaniso: Int): void;
 declare function gpu_set_tex_max_aniso_ext(
-  sampler_id: shader_sampler,
-  maxaniso: int,
+  sampler_id: ShaderSampler,
+  maxaniso: Int
 ): void;
-declare function gpu_set_tex_mip_enable(setting: texture_mip_state): any;
+declare function gpu_set_tex_mip_enable(setting: TextureMipState): any;
 declare function gpu_set_tex_mip_enable_ext(
-  sampler_id: shader_sampler,
-  setting: texture_mip_state,
+  sampler_id: ShaderSampler,
+  setting: TextureMipState
 ): any;
-declare function gpu_get_blendenable(): bool;
-declare function gpu_get_ztestenable(): bool;
-declare function gpu_get_zwriteenable(): bool;
+declare function gpu_get_blendenable(): boolean;
+declare function gpu_get_ztestenable(): boolean;
+declare function gpu_get_zwriteenable(): boolean;
 declare function gpu_get_fog(): any[];
-declare function gpu_get_blendmode(): blendmode;
-declare function gpu_get_blendmode_ext(): blendmode_ext[];
-declare function gpu_get_blendmode_ext_sepalpha(): blendmode_ext[];
-declare function gpu_get_blendmode_src(): blendmode_ext;
-declare function gpu_get_blendmode_dest(): blendmode_ext;
-declare function gpu_get_blendmode_srcalpha(): blendmode_ext;
-declare function gpu_get_blendmode_destalpha(): blendmode_ext;
-declare function gpu_get_colorwriteenable(): bool;
-declare function gpu_get_colourwriteenable(): bool;
-declare function gpu_get_alphatestenable(): bool;
-declare function gpu_get_alphatestref(): int;
-declare function gpu_get_texfilter(): bool;
-declare function gpu_get_texfilter_ext(sampler_id: shader_sampler): bool;
-declare function gpu_get_texrepeat(): bool;
-declare function gpu_get_texrepeat_ext(sampler_id: shader_sampler): bool;
-declare function gpu_get_tex_filter(): bool;
-declare function gpu_get_tex_filter_ext(sampler_id: shader_sampler): bool;
-declare function gpu_get_tex_repeat(): bool;
-declare function gpu_get_tex_repeat_ext(sampler_id: shader_sampler): bool;
-declare function gpu_get_tex_mip_filter(): texture_mip_filter;
+declare function gpu_get_blendmode(): Blendmode;
+declare function gpu_get_blendmode_ext(): BlendmodeExt[];
+declare function gpu_get_blendmode_ext_sepalpha(): BlendmodeExt[];
+declare function gpu_get_blendmode_src(): BlendmodeExt;
+declare function gpu_get_blendmode_dest(): BlendmodeExt;
+declare function gpu_get_blendmode_srcalpha(): BlendmodeExt;
+declare function gpu_get_blendmode_destalpha(): BlendmodeExt;
+declare function gpu_get_colorwriteenable(): boolean;
+declare function gpu_get_colourwriteenable(): boolean;
+declare function gpu_get_alphatestenable(): boolean;
+declare function gpu_get_alphatestref(): Int;
+declare function gpu_get_texfilter(): boolean;
+declare function gpu_get_texfilter_ext(sampler_id: ShaderSampler): boolean;
+declare function gpu_get_texrepeat(): boolean;
+declare function gpu_get_texrepeat_ext(sampler_id: ShaderSampler): boolean;
+declare function gpu_get_tex_filter(): boolean;
+declare function gpu_get_tex_filter_ext(sampler_id: ShaderSampler): boolean;
+declare function gpu_get_tex_repeat(): boolean;
+declare function gpu_get_tex_repeat_ext(sampler_id: ShaderSampler): boolean;
+declare function gpu_get_tex_mip_filter(): TextureMipFilter;
 declare function gpu_get_tex_mip_filter_ext(
-  sampler_id: shader_sampler,
-): texture_mip_filter;
+  sampler_id: ShaderSampler
+): TextureMipFilter;
 declare function gpu_get_tex_mip_bias(): number;
-declare function gpu_get_tex_mip_bias_ext(sampler_id: shader_sampler): number;
-declare function gpu_get_tex_min_mip(): int;
-declare function gpu_get_tex_min_mip_ext(sampler_id: shader_sampler): int;
-declare function gpu_get_tex_max_mip(): int;
-declare function gpu_get_tex_max_mip_ext(sampler_id: shader_sampler): int;
-declare function gpu_get_tex_max_aniso(): int;
-declare function gpu_get_tex_max_aniso_ext(sampler_id: shader_sampler): int;
-declare function gpu_get_tex_mip_enable(): texture_mip_state;
+declare function gpu_get_tex_mip_bias_ext(sampler_id: ShaderSampler): number;
+declare function gpu_get_tex_min_mip(): Int;
+declare function gpu_get_tex_min_mip_ext(sampler_id: ShaderSampler): Int;
+declare function gpu_get_tex_max_mip(): Int;
+declare function gpu_get_tex_max_mip_ext(sampler_id: ShaderSampler): Int;
+declare function gpu_get_tex_max_aniso(): Int;
+declare function gpu_get_tex_max_aniso_ext(sampler_id: ShaderSampler): Int;
+declare function gpu_get_tex_mip_enable(): TextureMipState;
 declare function gpu_get_tex_mip_enable_ext(
-  sampler_id: shader_sampler,
-): texture_mip_state;
+  sampler_id: ShaderSampler
+): TextureMipState;
 declare function gpu_push_state(): void;
 declare function gpu_pop_state(): void;
-declare function gpu_get_state(): ds_map<string, any>;
-declare function gpu_set_state(map: ds_map<string, any>): void;
-declare function draw_light_define_ambient(col: int): void;
+declare function gpu_get_state(): DsMap<string, any>;
+declare function gpu_set_state(map: DsMap<string, any>): void;
+declare function draw_light_define_ambient(col: Int): void;
 declare function draw_light_define_direction(
-  ind: int,
+  ind: Int,
   dx: number,
   dy: number,
   dz: number,
-  col: int,
+  col: Int
 ): void;
 declare function draw_light_define_point(
-  ind: int,
+  ind: Int,
   x: number,
   y: number,
   z: number,
   range: number,
-  col: int,
+  col: Int
 ): void;
-declare function draw_light_enable(ind: int, enable: boolean): void;
+declare function draw_light_enable(ind: Int, enable: boolean): void;
 declare function draw_set_lighting(enable: boolean): void;
-declare function draw_light_get_ambient(): int;
-declare function draw_light_get(ind: int): any[];
-declare function draw_get_lighting(): bool;
-declare function gamepad_hat_count(device: int): int;
-declare function gamepad_hat_value(device: int, hatIndex: int): number;
-declare function gamepad_remove_mapping(device: int): void;
+declare function draw_light_get_ambient(): Int;
+declare function draw_light_get(ind: Int): any[];
+declare function draw_get_lighting(): boolean;
+declare function gamepad_hat_count(device: Int): Int;
+declare function gamepad_hat_value(device: Int, hatIndex: Int): number;
+declare function gamepad_remove_mapping(device: Int): void;
 declare function gamepad_test_mapping(
-  device: int,
-  mapping_string: string,
+  device: Int,
+  mapping_string: string
 ): void;
-declare function gamepad_get_mapping(device: int): string;
-declare function gamepad_get_guid(device: int): string;
+declare function gamepad_get_mapping(device: Int): string;
+declare function gamepad_get_guid(device: Int): string;
 declare function gamepad_set_option(
-  gamepad_id: int,
+  gamepad_id: Int,
   option_key: string,
-  option_value: any,
+  option_value: any
 ): void;
-declare function gamepad_get_option(gamepad_id: int, option_key: string): any;
-declare function layer_get_id(layer_name: string): layer;
-declare function layer_get_id_at_depth(depth: int): layer;
-declare function layer_get_depth(layer_id: layer | string): int;
-declare function layer_create(depth: int, name?: string): layer;
-declare function layer_destroy(layer_id: layer | string): void;
-declare function layer_destroy_instances(layer_id: layer | string): void;
+declare function gamepad_get_option(gamepad_id: Int, option_key: string): any;
+declare function layer_get_id(layer_name: string): Layer;
+declare function layer_get_id_at_depth(depth: Int): Layer;
+declare function layer_get_depth(layer_id: Layer | string): Int;
+declare function layer_create(depth: Int, name?: string): Layer;
+declare function layer_destroy(layer_id: Layer | string): void;
+declare function layer_destroy_instances(layer_id: Layer | string): void;
 declare function layer_add_instance<T extends any>(
-  layer_id: layer | string,
-  instance: T,
+  layer_id: Layer | string,
+  instance: T
 ): void;
 declare function layer_has_instance<T extends any>(
-  layer_id: layer | string,
-  instance: T,
-): bool;
+  layer_id: Layer | string,
+  instance: T
+): boolean;
 declare function layer_set_visible(
-  layer_id: layer | string,
-  visible: boolean,
+  layer_id: Layer | string,
+  visible: boolean
 ): void;
-declare function layer_get_visible(layer_id: layer | string): bool;
-declare function layer_exists(layer_id: layer | string): bool;
-declare function layer_x(layer_id: layer | string, x: number): void;
-declare function layer_y(layer_id: layer | string, y: number): void;
-declare function layer_get_x(layer_id: layer | string): number;
-declare function layer_get_y(layer_id: layer | string): number;
-declare function layer_hspeed(layer_id: layer | string, speed: number): void;
-declare function layer_vspeed(layer_id: layer | string, speed: number): void;
-declare function layer_get_hspeed(layer_id: layer | string): number;
-declare function layer_get_vspeed(layer_id: layer | string): number;
+declare function layer_get_visible(layer_id: Layer | string): boolean;
+declare function layer_exists(layer_id: Layer | string): boolean;
+declare function layer_x(layer_id: Layer | string, x: number): void;
+declare function layer_y(layer_id: Layer | string, y: number): void;
+declare function layer_get_x(layer_id: Layer | string): number;
+declare function layer_get_y(layer_id: Layer | string): number;
+declare function layer_hspeed(layer_id: Layer | string, speed: number): void;
+declare function layer_vspeed(layer_id: Layer | string, speed: number): void;
+declare function layer_get_hspeed(layer_id: Layer | string): number;
+declare function layer_get_vspeed(layer_id: Layer | string): number;
 declare function layer_script_begin(
-  layer_id: layer | string,
-  script: scripts,
+  layer_id: Layer | string,
+  script: Script
 ): void;
 declare function layer_script_end(
-  layer_id: layer | string,
-  script: scripts,
+  layer_id: Layer | string,
+  script: Script
 ): void;
-declare function layer_shader(layer_id: layer | string, shader: shaders): void;
-declare function layer_get_script_begin(layer_id: layer | string): scripts;
-declare function layer_get_script_end(layer_id: layer | string): scripts;
-declare function layer_get_shader(layer_id: layer | string): shaders;
-declare function layer_set_target_room(room: rooms): void;
-declare function layer_get_target_room(): rooms;
+declare function layer_shader(layer_id: Layer | string, shader: Shaders): void;
+declare function layer_get_script_begin(layer_id: Layer | string): Script;
+declare function layer_get_script_end(layer_id: Layer | string): Script;
+declare function layer_get_shader(layer_id: Layer | string): Shaders;
+declare function layer_set_target_room(room: Room): void;
+declare function layer_get_target_room(): Room;
 declare function layer_reset_target_room(): void;
-declare function layer_get_all(): layer[];
+declare function layer_get_all(): Layer[];
 declare function layer_get_all_elements(
-  layer_id: layer | string,
-): layer_element[];
-declare function layer_get_name(layer_id: layer | string): string;
-declare function layer_depth(layer_id: layer | string, depth: int): void;
-declare function layer_get_element_layer(element_id: layer_element): layer;
+  layer_id: Layer | string
+): LayerElement[];
+declare function layer_get_name(layer_id: Layer | string): string;
+declare function layer_depth(layer_id: Layer | string, depth: Int): void;
+declare function layer_get_element_layer(element_id: LayerElement): Layer;
 declare function layer_get_element_type(
-  element_id: layer_element,
-): layer_element_type;
+  element_id: LayerElement
+): LayerElementType;
 declare function layer_element_move(
-  element_id: layer_element,
-  layer_id: layer | string,
+  element_id: LayerElement,
+  layer_id: Layer | string
 ): void;
 declare function layer_force_draw_depth(force: boolean, depth: number): void;
-declare function layer_is_draw_depth_forced(): bool;
+declare function layer_is_draw_depth_forced(): boolean;
 declare function layer_get_forced_depth(): number;
 declare function layer_background_get_id(
-  layer_id: layer | string,
-): layer_background;
+  layer_id: Layer | string
+): LayerBackground;
 declare function layer_background_exists(
-  layer_id: layer | string,
-  background_element_id: layer_background,
-): bool;
+  layer_id: Layer | string,
+  background_element_id: LayerBackground
+): boolean;
 declare function layer_background_create(
-  layer_id: layer | string,
-  sprite: sprites,
-): layer_background;
+  layer_id: Layer | string,
+  Sprite: Sprite
+): LayerBackground;
 declare function layer_background_destroy(
-  background_element_id: layer_background,
+  background_element_id: LayerBackground
 ): void;
 declare function layer_background_visible(
-  background_element_id: layer_background,
-  visible: boolean,
+  background_element_id: LayerBackground,
+  visible: boolean
 ): void;
 declare function layer_background_change(
-  background_element_id: layer_background,
-  sprite: sprites,
+  background_element_id: LayerBackground,
+  Sprite: Sprite
 ): void;
 declare function layer_background_sprite(
-  background_element_id: layer_background,
-  sprite: sprites,
+  background_element_id: LayerBackground,
+  Sprite: Sprite
 ): void;
 declare function layer_background_htiled(
-  background_element_id: layer_background,
-  tiled: boolean,
+  background_element_id: LayerBackground,
+  tiled: boolean
 ): void;
 declare function layer_background_vtiled(
-  background_element_id: layer_background,
-  tiled: boolean,
+  background_element_id: LayerBackground,
+  tiled: boolean
 ): void;
 declare function layer_background_stretch(
-  background_element_id: layer_background,
-  stretch: boolean,
+  background_element_id: LayerBackground,
+  stretch: boolean
 ): void;
 declare function layer_background_yscale(
-  background_element_id: layer_background,
-  yscale: number,
+  background_element_id: LayerBackground,
+  yscale: number
 ): void;
 declare function layer_background_xscale(
-  background_element_id: layer_background,
-  xscale: number,
+  background_element_id: LayerBackground,
+  xscale: number
 ): void;
 declare function layer_background_blend(
-  background_element_id: layer_background,
-  col: int,
+  background_element_id: LayerBackground,
+  col: Int
 ): void;
 declare function layer_background_alpha(
-  background_element_id: layer_background,
-  alpha: number,
+  background_element_id: LayerBackground,
+  alpha: number
 ): void;
 declare function layer_background_index(
-  background_element_id: layer_background,
-  image_index: int,
+  background_element_id: LayerBackground,
+  image_index: Int
 ): void;
 declare function layer_background_speed(
-  background_element_id: layer_background,
-  image_speed: number,
+  background_element_id: LayerBackground,
+  image_speed: number
 ): void;
 declare function layer_background_get_visible(
-  background_element_id: layer_background,
-): bool;
+  background_element_id: LayerBackground
+): boolean;
 declare function layer_background_get_sprite(
-  background_element_id: layer_background,
-): sprites;
+  background_element_id: LayerBackground
+): Sprite;
 declare function layer_background_get_htiled(
-  background_element_id: layer_background,
-): bool;
+  background_element_id: LayerBackground
+): boolean;
 declare function layer_background_get_vtiled(
-  background_element_id: layer_background,
-): bool;
+  background_element_id: LayerBackground
+): boolean;
 declare function layer_background_get_stretch(
-  background_element_id: layer_background,
-): bool;
+  background_element_id: LayerBackground
+): boolean;
 declare function layer_background_get_yscale(
-  background_element_id: layer_background,
+  background_element_id: LayerBackground
 ): number;
 declare function layer_background_get_xscale(
-  background_element_id: layer_background,
+  background_element_id: LayerBackground
 ): number;
 declare function layer_background_get_blend(
-  background_element_id: layer_background,
-): int;
+  background_element_id: LayerBackground
+): Int;
 declare function layer_background_get_alpha(
-  background_element_id: layer_background,
+  background_element_id: LayerBackground
 ): number;
 declare function layer_background_get_index(
-  background_element_id: layer_background,
-): int;
+  background_element_id: LayerBackground
+): Int;
 declare function layer_background_get_speed(
-  background_element_id: layer_background,
+  background_element_id: LayerBackground
 ): number;
 declare function layer_sprite_get_id(
-  layer_id: layer | string,
-  sprite_element_name: string,
-): layer_sprite;
+  layer_id: Layer | string,
+  sprite_element_name: string
+): LayerSprite;
 declare function layer_sprite_exists(
-  layer_id: layer | string,
-  sprite_element_id: layer_sprite,
-): bool;
+  layer_id: Layer | string,
+  sprite_element_id: LayerSprite
+): boolean;
 declare function layer_sprite_create(
-  layer_id: layer | string,
+  layer_id: Layer | string,
   x: number,
   y: any,
-  sprite: number,
-): layer_sprite;
-declare function layer_sprite_destroy(sprite_element_id: layer_sprite): void;
+  Sprite: number
+): LayerSprite;
+declare function layer_sprite_destroy(sprite_element_id: LayerSprite): void;
 declare function layer_sprite_change(
-  sprite_element_id: layer_sprite,
-  sprite: sprites,
+  sprite_element_id: LayerSprite,
+  Sprite: Sprite
 ): void;
 declare function layer_sprite_index(
-  sprite_element_id: layer_sprite,
-  image_index: int,
+  sprite_element_id: LayerSprite,
+  image_index: Int
 ): void;
 declare function layer_sprite_speed(
-  sprite_element_id: layer_sprite,
-  image_speed: number,
+  sprite_element_id: LayerSprite,
+  image_speed: number
 ): void;
 declare function layer_sprite_xscale(
-  sprite_element_id: layer_sprite,
-  scale: number,
+  sprite_element_id: LayerSprite,
+  scale: number
 ): void;
 declare function layer_sprite_yscale(
-  sprite_element_id: layer_sprite,
-  scale: number,
+  sprite_element_id: LayerSprite,
+  scale: number
 ): void;
 declare function layer_sprite_angle(
-  sprite_element_id: layer_sprite,
-  angle: number,
+  sprite_element_id: LayerSprite,
+  angle: number
 ): void;
 declare function layer_sprite_blend(
-  sprite_element_id: layer_sprite,
-  col: int,
+  sprite_element_id: LayerSprite,
+  col: Int
 ): void;
 declare function layer_sprite_alpha(
-  sprite_element_id: layer_sprite,
-  alpha: number,
+  sprite_element_id: LayerSprite,
+  alpha: number
 ): void;
 declare function layer_sprite_x(
-  sprite_element_id: layer_sprite,
-  x: number,
+  sprite_element_id: LayerSprite,
+  x: number
 ): void;
 declare function layer_sprite_y(
-  sprite_element_id: layer_sprite,
-  y: number,
+  sprite_element_id: LayerSprite,
+  y: number
 ): void;
 declare function layer_sprite_get_sprite(
-  sprite_element_id: layer_sprite,
-): sprites;
-declare function layer_sprite_get_index(sprite_element_id: layer_sprite): int;
-declare function layer_sprite_get_speed(
-  sprite_element_id: layer_sprite,
-): number;
+  sprite_element_id: LayerSprite
+): Sprite;
+declare function layer_sprite_get_index(sprite_element_id: LayerSprite): Int;
+declare function layer_sprite_get_speed(sprite_element_id: LayerSprite): number;
 declare function layer_sprite_get_xscale(
-  sprite_element_id: layer_sprite,
+  sprite_element_id: LayerSprite
 ): number;
 declare function layer_sprite_get_yscale(
-  sprite_element_id: layer_sprite,
+  sprite_element_id: LayerSprite
 ): number;
-declare function layer_sprite_get_angle(
-  sprite_element_id: layer_sprite,
-): number;
-declare function layer_sprite_get_blend(sprite_element_id: layer_sprite): int;
-declare function layer_sprite_get_alpha(
-  sprite_element_id: layer_sprite,
-): number;
-declare function layer_sprite_get_x(sprite_element_id: layer_sprite): number;
-declare function layer_sprite_get_y(sprite_element_id: layer_sprite): number;
+declare function layer_sprite_get_angle(sprite_element_id: LayerSprite): number;
+declare function layer_sprite_get_blend(sprite_element_id: LayerSprite): Int;
+declare function layer_sprite_get_alpha(sprite_element_id: LayerSprite): number;
+declare function layer_sprite_get_x(sprite_element_id: LayerSprite): number;
+declare function layer_sprite_get_y(sprite_element_id: LayerSprite): number;
 declare function layer_tile_exists(
-  layer_id: layer | string,
-  tile_element_id: layer_tile_legacy,
-): bool;
+  layer_id: Layer | string,
+  tile_element_id: LayerTileLegacy
+): boolean;
 declare function layer_tile_create(
-  layer_id: layer | string,
+  layer_id: Layer | string,
   x: number,
   y: number,
-  tileset: sprites,
+  tileset: Sprite,
   left: number,
   top: number,
   width: number,
-  height: number,
-): layer_tile_legacy;
-declare function layer_tile_destroy(tile_element_id: layer_tile_legacy): void;
+  height: number
+): LayerTileLegacy;
+declare function layer_tile_destroy(tile_element_id: LayerTileLegacy): void;
 declare function layer_tile_change(
-  tile_element_id: layer_tile_legacy,
-  sprite: sprites,
+  tile_element_id: LayerTileLegacy,
+  Sprite: Sprite
 ): void;
 declare function layer_tile_xscale(
-  tile_element_id: layer_tile_legacy,
-  scale: number,
+  tile_element_id: LayerTileLegacy,
+  scale: number
 ): void;
 declare function layer_tile_yscale(
-  tile_element_id: layer_tile_legacy,
-  scale: number,
+  tile_element_id: LayerTileLegacy,
+  scale: number
 ): void;
 declare function layer_tile_blend(
-  tile_element_id: layer_tile_legacy,
-  col: int,
+  tile_element_id: LayerTileLegacy,
+  col: Int
 ): void;
 declare function layer_tile_alpha(
-  tile_element_id: layer_tile_legacy,
-  alpha: number,
+  tile_element_id: LayerTileLegacy,
+  alpha: number
 ): void;
 declare function layer_tile_x(
-  tile_element_id: layer_tile_legacy,
-  x: number,
+  tile_element_id: LayerTileLegacy,
+  x: number
 ): void;
 declare function layer_tile_y(
-  tile_element_id: layer_tile_legacy,
-  y: number,
+  tile_element_id: LayerTileLegacy,
+  y: number
 ): void;
 declare function layer_tile_region(
-  tile_element_id: layer_tile_legacy,
+  tile_element_id: LayerTileLegacy,
   left: number,
   top: number,
   width: number,
-  height: number,
+  height: number
 ): void;
 declare function layer_tile_visible(
-  tile_element_id: layer_tile_legacy,
-  visible: boolean,
+  tile_element_id: LayerTileLegacy,
+  visible: boolean
 ): void;
 declare function layer_tile_get_sprite(
-  tile_element_id: layer_tile_legacy,
-): sprites;
+  tile_element_id: LayerTileLegacy
+): Sprite;
 declare function layer_tile_get_xscale(
-  tile_element_id: layer_tile_legacy,
+  tile_element_id: LayerTileLegacy
 ): number;
 declare function layer_tile_get_yscale(
-  tile_element_id: layer_tile_legacy,
+  tile_element_id: LayerTileLegacy
 ): number;
-declare function layer_tile_get_blend(tile_element_id: layer_tile_legacy): int;
-declare function layer_tile_get_alpha(
-  tile_element_id: layer_tile_legacy,
-): number;
-declare function layer_tile_get_x(tile_element_id: layer_tile_legacy): number;
-declare function layer_tile_get_y(tile_element_id: layer_tile_legacy): number;
+declare function layer_tile_get_blend(tile_element_id: LayerTileLegacy): Int;
+declare function layer_tile_get_alpha(tile_element_id: LayerTileLegacy): number;
+declare function layer_tile_get_x(tile_element_id: LayerTileLegacy): number;
+declare function layer_tile_get_y(tile_element_id: LayerTileLegacy): number;
 declare function layer_tile_get_region(
-  tile_element_id: layer_tile_legacy,
+  tile_element_id: LayerTileLegacy
 ): number[];
 declare function layer_tile_get_visible(
-  tile_element_id: layer_tile_legacy,
-): bool;
+  tile_element_id: LayerTileLegacy
+): boolean;
 declare function layer_instance_get_instance(
-  instance_element_id: layer_instance,
+  instance_element_id: LayerInstance
 ): any;
-declare function instance_activate_layer(layer_id: layer | string): bool;
-declare function instance_deactivate_layer(layer_id: layer | string): bool;
-declare function layer_tilemap_get_id(layer_id: layer | string): layer_tilemap;
+declare function instance_activate_layer(layer_id: Layer | string): boolean;
+declare function instance_deactivate_layer(layer_id: Layer | string): boolean;
+declare function layer_tilemap_get_id(layer_id: Layer | string): LayerTilemap;
 declare function layer_tilemap_exists(
-  layer_id: layer | string,
-  tilemap_element_id: layer_tilemap,
-): bool;
+  layer_id: Layer | string,
+  tilemap_element_id: LayerTilemap
+): boolean;
 declare function layer_tilemap_create(
-  layer_id: layer | string,
+  layer_id: Layer | string,
   x: number,
   y: number,
-  tileset: tilesets,
-  width: int,
-  height: int,
-): layer_tilemap;
-declare function layer_tilemap_destroy(tilemap_element_id: layer_tilemap): void;
+  tileset: Tileset,
+  width: Int,
+  height: Int
+): LayerTilemap;
+declare function layer_tilemap_destroy(tilemap_element_id: LayerTilemap): void;
 declare function tilemap_tileset(
-  tilemap_element_id: layer_tilemap,
-  tileset: tilesets,
+  tilemap_element_id: LayerTilemap,
+  tileset: Tileset
 ): void;
-declare function tilemap_x(tilemap_element_id: layer_tilemap, x: number): void;
-declare function tilemap_y(tilemap_element_id: layer_tilemap, y: number): void;
+declare function tilemap_x(tilemap_element_id: LayerTilemap, x: number): void;
+declare function tilemap_y(tilemap_element_id: LayerTilemap, y: number): void;
 declare function tilemap_set(
-  tilemap_element_id: layer_tilemap,
-  tiledata: tilemap_data,
-  cell_x: int,
-  cell_y: int,
-): bool;
+  tilemap_element_id: LayerTilemap,
+  tiledata: TilemapData,
+  cell_x: Int,
+  cell_y: Int
+): boolean;
 declare function tilemap_set_at_pixel(
-  tilemap_element_id: layer_tilemap,
-  tiledata: tilemap_data,
+  tilemap_element_id: LayerTilemap,
+  tiledata: TilemapData,
   x: number,
-  y: number,
-): bool;
-declare function tileset_get_texture(tileset: tilesets): texture;
-declare function tileset_get_uvs(tileset: tilesets): int[];
-declare function tileset_get_name(tileset: tilesets): string;
-declare function tilemap_get_tileset(
-  tilemap_element_id: layer_tilemap,
-): tilesets;
-declare function tilemap_get_tile_width(tilemap_element_id: layer_tilemap): int;
-declare function tilemap_get_tile_height(
-  tilemap_element_id: layer_tilemap,
-): int;
-declare function tilemap_get_width(tilemap_element_id: layer_tilemap): int;
-declare function tilemap_get_height(tilemap_element_id: layer_tilemap): int;
+  y: number
+): boolean;
+declare function tileset_get_texture(tileset: Tileset): Texture;
+declare function tileset_get_uvs(tileset: Tileset): Int[];
+declare function tileset_get_name(tileset: Tileset): string;
+declare function tilemap_get_tileset(tilemap_element_id: LayerTilemap): Tileset;
+declare function tilemap_get_tile_width(tilemap_element_id: LayerTilemap): Int;
+declare function tilemap_get_tile_height(tilemap_element_id: LayerTilemap): Int;
+declare function tilemap_get_width(tilemap_element_id: LayerTilemap): Int;
+declare function tilemap_get_height(tilemap_element_id: LayerTilemap): Int;
 declare function tilemap_set_width(
-  tilemap_element_id: layer_tilemap,
-  width: int,
+  tilemap_element_id: LayerTilemap,
+  width: Int
 ): void;
 declare function tilemap_set_height(
-  tilemap_element_id: layer_tilemap,
-  height: int,
+  tilemap_element_id: LayerTilemap,
+  height: Int
 ): void;
-declare function tilemap_get_x(tilemap_element_id: layer_tilemap): number;
-declare function tilemap_get_y(tilemap_element_id: layer_tilemap): number;
+declare function tilemap_get_x(tilemap_element_id: LayerTilemap): number;
+declare function tilemap_get_y(tilemap_element_id: LayerTilemap): number;
 declare function tilemap_get(
-  tilemap_element_id: layer_tilemap,
-  cell_x: int,
-  cell_y: int,
-): tilemap_data;
+  tilemap_element_id: LayerTilemap,
+  cell_x: Int,
+  cell_y: Int
+): TilemapData;
 declare function tilemap_get_at_pixel(
-  tilemap_element_id: layer_tilemap,
+  tilemap_element_id: LayerTilemap,
   x: number,
-  y: number,
-): tilemap_data;
+  y: number
+): TilemapData;
 declare function tilemap_get_cell_x_at_pixel(
-  tilemap_element_id: layer_tilemap,
+  tilemap_element_id: LayerTilemap,
   x: number,
-  y: number,
-): int;
+  y: number
+): Int;
 declare function tilemap_get_cell_y_at_pixel(
-  tilemap_element_id: layer_tilemap,
+  tilemap_element_id: LayerTilemap,
   x: number,
-  y: number,
-): int;
+  y: number
+): Int;
 declare function tilemap_clear(
-  tilemap_element_id: layer_tilemap,
-  tiledata: tilemap_data,
+  tilemap_element_id: LayerTilemap,
+  tiledata: TilemapData
 ): void;
 declare function draw_tilemap(
-  tilemap_element_id: layer_tilemap,
+  tilemap_element_id: LayerTilemap,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function draw_tile(
-  tileset: tilesets,
-  tiledata: tilemap_data,
+  tileset: Tileset,
+  tiledata: TilemapData,
   frame: number,
   x: number,
-  y: number,
+  y: number
 ): void;
-declare function tilemap_set_global_mask(mask: tilemap_data): void;
-declare function tilemap_get_global_mask(): tilemap_data;
+declare function tilemap_set_global_mask(mask: TilemapData): void;
+declare function tilemap_get_global_mask(): TilemapData;
 declare function tilemap_set_mask(
-  tilemap_element_id: layer_tilemap,
-  mask: tilemap_data,
+  tilemap_element_id: LayerTilemap,
+  mask: TilemapData
 ): void;
 declare function tilemap_get_mask(
-  tilemap_element_id: layer_tilemap,
-): tilemap_data;
-declare function tilemap_get_frame(tilemap_element_id: layer_tilemap): number;
-declare function tile_set_empty(tiledata: tilemap_data): tilemap_data;
+  tilemap_element_id: LayerTilemap
+): TilemapData;
+declare function tilemap_get_frame(tilemap_element_id: LayerTilemap): number;
+declare function tile_set_empty(tiledata: TilemapData): TilemapData;
 declare function tile_set_index(
-  tiledata: tilemap_data,
-  tileindex: int,
-): tilemap_data;
+  tiledata: TilemapData,
+  tileindex: Int
+): TilemapData;
 declare function tile_set_flip(
-  tiledata: tilemap_data,
-  flip: boolean,
-): tilemap_data;
+  tiledata: TilemapData,
+  flip: boolean
+): TilemapData;
 declare function tile_set_mirror(
-  tiledata: tilemap_data,
-  mirror: boolean,
-): tilemap_data;
-declare function tile_set_rotate(tiledata: any, rotate: boolean): tilemap_data;
-declare function tile_get_empty(tiledata: tilemap_data): bool;
-declare function tile_get_index(tiledata: tilemap_data): int;
-declare function tile_get_flip(tiledata: tilemap_data): bool;
-declare function tile_get_mirror(tiledata: tilemap_data): bool;
-declare function tile_get_rotate(tiledata: tilemap_data): bool;
-declare function camera_create(): camera;
+  tiledata: TilemapData,
+  mirror: boolean
+): TilemapData;
+declare function tile_set_rotate(tiledata: any, rotate: boolean): TilemapData;
+declare function tile_get_empty(tiledata: TilemapData): boolean;
+declare function tile_get_index(tiledata: TilemapData): Int;
+declare function tile_get_flip(tiledata: TilemapData): boolean;
+declare function tile_get_mirror(tiledata: TilemapData): boolean;
+declare function tile_get_rotate(tiledata: TilemapData): boolean;
+declare function camera_create(): Camera;
 declare function camera_create_view<T extends any>(
   room_x: number,
   room_y: number,
@@ -1868,75 +2023,72 @@ declare function camera_create_view<T extends any>(
   x_speed?: number,
   y_speed?: number,
   x_border?: number,
-  y_border?: number,
-): camera;
-declare function camera_destroy(camera: camera): void;
-declare function camera_apply(camera: camera): void;
-declare function camera_get_active(): camera;
-declare function camera_get_default(): camera;
-declare function camera_set_default(camera: camera): void;
-declare function camera_set_view_mat(camera: camera, matrix: number[]): void;
-declare function camera_set_proj_mat(camera: camera, matrix: number[]): void;
-declare function camera_set_update_script(
-  camera: camera,
-  script: scripts,
-): void;
-declare function camera_set_begin_script(camera: camera, script: scripts): void;
-declare function camera_set_end_script(camera: camera, script: scripts): void;
+  y_border?: number
+): Camera;
+declare function camera_destroy(Camera: Camera): void;
+declare function camera_apply(Camera: Camera): void;
+declare function camera_get_active(): Camera;
+declare function camera_get_default(): Camera;
+declare function camera_set_default(Camera: Camera): void;
+declare function camera_set_view_mat(Camera: Camera, matrix: number[]): void;
+declare function camera_set_proj_mat(Camera: Camera, matrix: number[]): void;
+declare function camera_set_update_script(Camera: Camera, script: Script): void;
+declare function camera_set_begin_script(Camera: Camera, script: Script): void;
+declare function camera_set_end_script(Camera: Camera, script: Script): void;
 declare function camera_set_view_pos(
-  camera: camera,
+  Camera: Camera,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function camera_set_view_size(
-  camera: camera,
+  Camera: Camera,
   width: number,
-  height: number,
+  height: number
 ): void;
 declare function camera_set_view_speed(
-  camera: camera,
+  Camera: Camera,
   x_speed: number,
-  y_speed: number,
+  y_speed: number
 ): void;
 declare function camera_set_view_border(
-  camera: camera,
+  Camera: Camera,
   x_border: number,
-  y_border: number,
+  y_border: number
 ): void;
-declare function camera_set_view_angle(camera: camera, angle: number): void;
+declare function camera_set_view_angle(Camera: Camera, angle: number): void;
 declare function camera_set_view_target<T extends any>(
-  camera: camera,
-  object: T,
+  Camera: Camera,
+  object: T
 ): void;
-declare function camera_get_view_mat(camera: camera): number[];
-declare function camera_get_proj_mat(camera: camera): number[];
-declare function camera_get_update_script(camera: camera): scripts;
-declare function camera_get_begin_script(camera: camera): scripts;
-declare function camera_get_end_script(camera: camera): scripts;
-declare function camera_get_view_x(camera: camera): number;
-declare function camera_get_view_y(camera: camera): number;
-declare function camera_get_view_width(camera: camera): number;
-declare function camera_get_view_height(camera: camera): number;
-declare function camera_get_view_speed_x(camera: camera): number;
-declare function camera_get_view_speed_y(camera: camera): number;
-declare function camera_get_view_border_x(camera: camera): number;
-declare function camera_get_view_border_y(camera: camera): number;
-declare function camera_get_view_angle(camera: camera): number;
-declare function camera_get_view_target(camera: camera): any;
-declare function view_get_camera(view: int): camera;
-declare function view_get_visible(view: int): bool;
-declare function view_get_xport(view: int): int;
-declare function view_get_yport(view: int): int;
-declare function view_get_wport(view: int): int;
-declare function view_get_hport(view: int): int;
-declare function view_get_surface_id(view: int): surface;
-declare function view_set_camera(view: int, camera: camera): void;
-declare function view_set_visible(view: int, visible: boolean): void;
-declare function view_set_xport(view: int, xport: int): void;
-declare function view_set_yport(view: int, yport: int): void;
-declare function view_set_wport(view: int, wport: int): void;
-declare function view_set_hport(view: int, hport: int): void;
-declare function view_set_surface_id(view: int, surface_id: surface): void;
+declare function camera_get_view_mat(Camera: Camera): number[];
+declare function camera_get_proj_mat(Camera: Camera): number[];
+declare function camera_get_update_script(Camera: Camera): Script;
+declare function camera_get_begin_script(Camera: Camera): Script;
+declare function camera_get_end_script(Camera: Camera): Script;
+declare function camera_get_view_x(Camera: Camera): number;
+declare function camera_get_view_y(Camera: Camera): number;
+declare function camera_get_view_width(Camera: Camera): number;
+declare function camera_get_view_height(Camera: Camera): number;
+declare function camera_get_view_speed_x(Camera: Camera): number;
+declare function camera_get_view_speed_y(Camera: Camera): number;
+declare function camera_get_view_border_x(Camera: Camera): number;
+declare function camera_get_view_border_y(Camera: Camera): number;
+declare function camera_get_view_angle(Camera: Camera): number;
+declare function camera_get_view_target(Camera: Camera): any;
+declare function view_get_camera(view: Int): Camera;
+declare function view_get_visible(view: Int): boolean;
+declare function view_get_xport(view: Int): Int;
+declare function view_get_yport(view: Int): Int;
+declare function view_get_wport(view: Int): Int;
+declare function view_get_hport(view: Int): Int;
+declare function view_get_surface_id(view: Int): Surface;
+declare function view_set_camera(view: Int, Camera: Camera): void;
+declare function view_set_visible(view: Int, visible: boolean): void;
+declare function view_set_xport(view: Int, xport: Int): void;
+declare function view_set_yport(view: Int, yport: Int): void;
+declare function view_set_wport(view: Int, wport: Int): void;
+declare function view_set_hport(view: Int, hport: Int): void;
+declare function view_set_surface_id(view: Int, surface_id: Surface): void;
 declare function gesture_drag_time(time: number): void;
 declare function gesture_drag_distance(distance: number): void;
 declare function gesture_flick_speed(speed: number): void;
@@ -1958,73 +2110,73 @@ declare function gesture_get_pinch_angle_towards(): number;
 declare function gesture_get_pinch_angle_away(): number;
 declare function gesture_get_rotate_time(): number;
 declare function gesture_get_rotate_angle(): number;
-declare function gesture_get_tap_count(): bool;
+declare function gesture_get_tap_count(): boolean;
 declare function keyboard_virtual_show(
-  virtual_keyboard_type: virtual_keyboard_type,
-  virtual_return_key_type: virtual_keyboard_return_key,
-  auto_capitalization_type: virtual_keyboard_autocapitalization,
-  predictive_text_enabled: boolean,
+  VirtualKeyboardType: VirtualKeyboardType,
+  virtual_return_key_type: VirtualKeyboardReturnKey,
+  auto_capitalization_type: VirtualKeyboardAutocapitalization,
+  predictive_text_enabled: boolean
 ): any;
 declare function keyboard_virtual_hide(): void;
-declare function keyboard_virtual_status(): bool;
-declare function keyboard_virtual_height(): int;
-declare function is_real(val: any): bool;
-declare function is_numeric(val: any): bool;
-declare function is_string(val: any): bool;
-declare function is_array(val: any): bool;
-declare function is_undefined(val: any): bool;
-declare function is_int32(val: any): bool;
-declare function is_int64(val: any): bool;
-declare function is_ptr(val: any): bool;
-declare function is_bool(val: any): bool;
-declare function variable_global_exists(name: string): bool;
+declare function keyboard_virtual_status(): boolean;
+declare function keyboard_virtual_height(): Int;
+declare function is_real(val: any): boolean;
+declare function is_numeric(val: any): boolean;
+declare function is_string(val: any): boolean;
+declare function is_array(val: any): boolean;
+declare function is_undefined(val: any): boolean;
+declare function is_int32(val: any): boolean;
+declare function is_int64(val: any): boolean;
+declare function is_ptr(val: any): boolean;
+declare function is_bool(val: any): boolean;
+declare function variable_global_exists(name: string): boolean;
 declare function variable_global_get(name: string): any;
 declare function variable_global_set(name: string, val: any): void;
-declare function variable_instance_exists<T extends instance>(
+declare function variable_instance_exists<T extends Instance>(
   id: T,
-  name: string,
-): bool;
-declare function variable_instance_get<T extends instance>(
+  name: string
+): boolean;
+declare function variable_instance_get<T extends Instance>(
   id: T,
-  name: string,
+  name: string
 ): any;
-declare function variable_instance_set<T extends instance>(
+declare function variable_instance_set<T extends Instance>(
   id: T,
   name: string,
-  val: any,
+  val: any
 ): void;
 declare function array_equals<T0 extends any, T1 extends any>(
   var1: T0[],
-  var2: T1[],
-): bool;
-declare function array_create<T extends any>(size: int, value?: T): array<T>;
+  var2: T1[]
+): boolean;
+declare function array_create<T extends any>(size: Int, value?: T): T[];
 declare function array_copy<T extends any>(
   dest: T[],
-  dest_index: int,
+  dest_index: Int,
   src: T[],
-  src_index: int,
-  length: int,
+  src_index: Int,
+  length: Int
 ): void;
-declare function array_get<T extends any>(variable: T[], index: int): any;
+declare function array_get<T extends any>(variable: T[], index: Int): any;
 declare function array_set<T extends any>(
   variable: T[],
-  index: int,
-  val: any,
+  index: Int,
+  val: any
 ): void;
 declare function random(x: number): number;
 declare function random_range(x1: number, x2: number): number;
-declare function irandom(x: int): int;
-declare function irandom_range(x1: int, x2: int): int;
-declare function random_set_seed(seed: int): void;
-declare function random_get_seed(): int;
+declare function irandom(x: Int): Int;
+declare function irandom_range(x1: Int, x2: Int): Int;
+declare function random_set_seed(seed: Int): void;
+declare function random_get_seed(): Int;
 declare function randomize(): void;
 declare function randomise(): void;
 declare function choose<T extends any>(...values: T[]): T;
 declare function abs(x: number): number;
-declare function round(x: number): int;
-declare function floor(x: number): int;
-declare function ceil(x: number): int;
-declare function sign(x: number): int;
+declare function round(x: number): Int;
+declare function floor(x: number): Int;
+declare function ceil(x: number): Int;
+declare function sign(x: number): Int;
 declare function frac(x: number): number;
 declare function sqrt(x: number): number;
 declare function sqr(x: number): number;
@@ -2060,7 +2212,7 @@ declare function dot_product(
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
+  y2: number
 ): number;
 declare function dot_product_3d(
   x1: number,
@@ -2068,13 +2220,13 @@ declare function dot_product_3d(
   z1: number,
   x2: number,
   y2: number,
-  z2: number,
+  z2: number
 ): number;
 declare function dot_product_normalised(
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
+  y2: number
 ): number;
 declare function dot_product_3d_normalised(
   x1: number,
@@ -2082,13 +2234,13 @@ declare function dot_product_3d_normalised(
   z1: number,
   x2: number,
   y2: number,
-  z2: number,
+  z2: number
 ): number;
 declare function dot_product_normalized(
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
+  y2: number
 ): number;
 declare function dot_product_3d_normalized(
   x1: number,
@@ -2096,7 +2248,7 @@ declare function dot_product_3d_normalized(
   z1: number,
   x2: number,
   y2: number,
-  z2: number,
+  z2: number
 ): number;
 declare function math_set_epsilon(new_epsilon: number): void;
 declare function math_get_epsilon(): number;
@@ -2107,131 +2259,131 @@ declare function point_distance_3d(
   z1: number,
   x2: number,
   y2: number,
-  z2: number,
+  z2: number
 ): number;
 declare function point_distance(
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
+  y2: number
 ): number;
 declare function point_direction(
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
+  y2: number
 ): number;
 declare function lengthdir_x(len: number, dir: number): number;
 declare function lengthdir_y(len: number, dir: number): number;
 declare function real(val: string): number;
-declare function bool(val: number): bool;
-declare function int64(val: number | string | pointer): int;
-declare function ptr(val: number | string): pointer;
-declare function string_format(val: number, total: int, dec: int): string;
-declare function chr(val: int): string;
-declare function ansi_char(val: int): string;
-declare function ord(char: string): int;
-declare function string_length(str: string): int;
-declare function string_byte_length(str: string): int;
-declare function string_pos(substr: string, str: string): int;
-declare function string_copy(str: string, index: int, count: int): string;
-declare function string_char_at(str: string, index: int): string;
-declare function string_ord_at(str: string, index: int): int;
-declare function string_byte_at(str: string, index: int): int;
-declare function string_set_byte_at(str: string, index: int, val: int): string;
-declare function string_delete(str: string, index: int, count: int): string;
-declare function string_insert(substr: string, str: string, index: int): string;
+declare function boolean(val: number): boolean;
+declare function int64(val: number | string | Pointer): Int;
+declare function ptr(val: number | string): Pointer;
+declare function string_format(val: number, total: Int, dec: Int): string;
+declare function chr(val: Int): string;
+declare function ansi_char(val: Int): string;
+declare function ord(char: string): Int;
+declare function string_length(str: string): Int;
+declare function string_byte_length(str: string): Int;
+declare function string_pos(substr: string, str: string): Int;
+declare function string_copy(str: string, index: Int, count: Int): string;
+declare function string_char_at(str: string, index: Int): string;
+declare function string_ord_at(str: string, index: Int): Int;
+declare function string_byte_at(str: string, index: Int): Int;
+declare function string_set_byte_at(str: string, index: Int, val: Int): string;
+declare function string_delete(str: string, index: Int, count: Int): string;
+declare function string_insert(substr: string, str: string, index: Int): string;
 declare function string_lower(str: string): string;
 declare function string_upper(str: string): string;
-declare function string_repeat(str: string, count: int): string;
+declare function string_repeat(str: string, count: Int): string;
 declare function string_letters(str: string): string;
 declare function string_digits(str: string): string;
 declare function string_lettersdigits(str: string): string;
 declare function string_replace(
   str: string,
   substr: string,
-  newstr: string,
+  newstr: string
 ): string;
 declare function string_replace_all(
   str: string,
   substr: string,
-  newstr: string,
+  newstr: string
 ): string;
-declare function string_count(substr: string, str: string): int;
-declare function clipboard_has_text(): bool;
+declare function string_count(substr: string, str: string): Int;
+declare function clipboard_has_text(): boolean;
 declare function clipboard_set_text(str: string): void;
 declare function clipboard_get_text(): string;
-declare function date_current_datetime(): datetime;
+declare function date_current_datetime(): Datetime;
 declare function date_create_datetime(
-  year: int,
-  month: int,
-  day: int,
-  hour: int,
-  minute: int,
-  second: int,
-): datetime;
+  year: Int,
+  month: Int,
+  day: Int,
+  hour: Int,
+  minute: Int,
+  second: Int
+): Datetime;
 declare function date_valid_datetime(
-  year: int,
-  month: int,
-  day: int,
-  hour: int,
-  minute: int,
-  second: int,
-): bool;
-declare function date_inc_year(date: datetime, amount: int): datetime;
-declare function date_inc_month(date: datetime, amount: int): datetime;
-declare function date_inc_week(date: datetime, amount: int): datetime;
-declare function date_inc_day(date: datetime, amount: int): datetime;
-declare function date_inc_hour(date: datetime, amount: int): datetime;
-declare function date_inc_minute(date: datetime, amount: int): datetime;
-declare function date_inc_second(date: datetime, amount: int): datetime;
-declare function date_get_year(date: datetime): int;
-declare function date_get_month(date: datetime): int;
-declare function date_get_week(date: datetime): int;
-declare function date_get_day(date: datetime): int;
-declare function date_get_hour(date: datetime): int;
-declare function date_get_minute(date: datetime): int;
-declare function date_get_second(date: datetime): int;
-declare function date_get_weekday(date: datetime): int;
-declare function date_get_day_of_year(date: datetime): int;
-declare function date_get_hour_of_year(date: datetime): int;
-declare function date_get_minute_of_year(date: datetime): int;
-declare function date_get_second_of_year(date: datetime): int;
-declare function date_year_span(date1: datetime, date2: datetime): int;
-declare function date_month_span(date1: datetime, date2: datetime): int;
-declare function date_week_span(date1: datetime, date2: datetime): int;
-declare function date_day_span(date1: datetime, date2: datetime): int;
-declare function date_hour_span(date1: datetime, date2: datetime): int;
-declare function date_minute_span(date1: datetime, date2: datetime): int;
-declare function date_second_span(date1: datetime, date2: datetime): int;
-declare function date_compare_datetime(date1: datetime, date2: datetime): int;
-declare function date_compare_date(date1: datetime, date2: datetime): int;
-declare function date_compare_time(date1: datetime, date2: datetime): int;
-declare function date_date_of(date: datetime): datetime;
-declare function date_time_of(date: datetime): datetime;
-declare function date_datetime_string(date: datetime): string;
-declare function date_date_string(date: datetime): string;
-declare function date_time_string(date: datetime): string;
-declare function date_days_in_month(date: datetime): int;
-declare function date_days_in_year(date: datetime): int;
-declare function date_leap_year(date: datetime): bool;
-declare function date_is_today(date: datetime): bool;
-declare function date_set_timezone(timezone: timezone_type): void;
-declare function date_get_timezone(): timezone_type;
+  year: Int,
+  month: Int,
+  day: Int,
+  hour: Int,
+  minute: Int,
+  second: Int
+): boolean;
+declare function date_inc_year(date: Datetime, amount: Int): Datetime;
+declare function date_inc_month(date: Datetime, amount: Int): Datetime;
+declare function date_inc_week(date: Datetime, amount: Int): Datetime;
+declare function date_inc_day(date: Datetime, amount: Int): Datetime;
+declare function date_inc_hour(date: Datetime, amount: Int): Datetime;
+declare function date_inc_minute(date: Datetime, amount: Int): Datetime;
+declare function date_inc_second(date: Datetime, amount: Int): Datetime;
+declare function date_get_year(date: Datetime): Int;
+declare function date_get_month(date: Datetime): Int;
+declare function date_get_week(date: Datetime): Int;
+declare function date_get_day(date: Datetime): Int;
+declare function date_get_hour(date: Datetime): Int;
+declare function date_get_minute(date: Datetime): Int;
+declare function date_get_second(date: Datetime): Int;
+declare function date_get_weekday(date: Datetime): Int;
+declare function date_get_day_of_year(date: Datetime): Int;
+declare function date_get_hour_of_year(date: Datetime): Int;
+declare function date_get_minute_of_year(date: Datetime): Int;
+declare function date_get_second_of_year(date: Datetime): Int;
+declare function date_year_span(date1: Datetime, date2: Datetime): Int;
+declare function date_month_span(date1: Datetime, date2: Datetime): Int;
+declare function date_week_span(date1: Datetime, date2: Datetime): Int;
+declare function date_day_span(date1: Datetime, date2: Datetime): Int;
+declare function date_hour_span(date1: Datetime, date2: Datetime): Int;
+declare function date_minute_span(date1: Datetime, date2: Datetime): Int;
+declare function date_second_span(date1: Datetime, date2: Datetime): Int;
+declare function date_compare_datetime(date1: Datetime, date2: Datetime): Int;
+declare function date_compare_date(date1: Datetime, date2: Datetime): Int;
+declare function date_compare_time(date1: Datetime, date2: Datetime): Int;
+declare function date_date_of(date: Datetime): Datetime;
+declare function date_time_of(date: Datetime): Datetime;
+declare function date_datetime_string(date: Datetime): string;
+declare function date_date_string(date: Datetime): string;
+declare function date_time_string(date: Datetime): string;
+declare function date_days_in_month(date: Datetime): Int;
+declare function date_days_in_year(date: Datetime): Int;
+declare function date_leap_year(date: Datetime): boolean;
+declare function date_is_today(date: Datetime): boolean;
+declare function date_set_timezone(timezone: TimezoneType): void;
+declare function date_get_timezone(): TimezoneType;
 declare function motion_set(dir: number, speed: number): void;
 declare function motion_add(dir: number, speed: number): void;
-declare function place_free(x: number, y: number): bool;
-declare function place_empty<T extends objects | instance>(
+declare function place_free(x: number, y: number): boolean;
+declare function place_empty<T extends Objects | Instance>(
   x: number,
   y: number,
-  obj: T,
-): bool;
-declare function place_meeting<T extends objects | instance>(
+  obj: T
+): boolean;
+declare function place_meeting<T extends Objects | Instance>(
   x: number,
   y: number,
-  obj: T,
-): bool;
-declare function place_snapped(hsnap: number, vsnap: number): bool;
+  obj: T
+): boolean;
+declare function place_snapped(hsnap: number, vsnap: number): boolean;
 declare function move_random(hsnap: number, vsnap: number): void;
 declare function move_snap(hsnap: number, vsnap: number): void;
 declare function move_towards_point(x: number, y: number, sp: number): void;
@@ -2243,166 +2395,166 @@ declare function move_bounce_solid(advanced: boolean): void;
 declare function move_bounce_all(advanced: boolean): void;
 declare function move_wrap(hor: number, vert: number, margin: number): void;
 declare function distance_to_point(x: number, y: number): number;
-declare function distance_to_object<T extends objects | instance>(
-  obj: T,
+declare function distance_to_object<T extends Objects | Instance>(
+  obj: T
 ): number;
-declare function position_empty(x: number, y: number): bool;
-declare function position_meeting<T extends objects | instance>(
+declare function position_empty(x: number, y: number): boolean;
+declare function position_meeting<T extends Objects | Instance>(
   x: number,
   y: number,
-  obj: T,
-): bool;
+  obj: T
+): boolean;
 declare function path_start(
-  path: paths,
+  path: Path,
   speed: number,
-  endaction: path_endaction,
-  absolute: boolean,
+  endaction: any,
+  absolute: boolean
 ): void;
 declare function path_end(): void;
 declare function mp_linear_step(
   x: number,
   y: number,
   speed: number,
-  checkall: boolean,
-): bool;
+  checkall: boolean
+): boolean;
 declare function mp_potential_step(
   x: number,
   y: number,
   speed: number,
-  checkall: boolean,
-): bool;
-declare function mp_linear_step_object<T extends objects | instance>(
+  checkall: boolean
+): boolean;
+declare function mp_linear_step_object<T extends Objects | Instance>(
   x: number,
   y: number,
   speed: number,
-  obj: T,
-): bool;
-declare function mp_potential_step_object<T extends objects | instance>(
+  obj: T
+): boolean;
+declare function mp_potential_step_object<T extends Objects | Instance>(
   x: number,
   y: number,
   speed: number,
-  obj: T,
-): bool;
+  obj: T
+): boolean;
 declare function mp_potential_settings(
   maxrot: number,
   rotstep: number,
-  ahead: int,
-  onspot: boolean,
+  ahead: Int,
+  onspot: boolean
 ): void;
 declare function mp_linear_path(
-  path: paths,
+  path: Path,
   xg: number,
   yg: number,
   stepsize: number,
-  checkall: boolean,
-): bool;
+  checkall: boolean
+): boolean;
 declare function mp_potential_path(
-  path: paths,
+  path: Path,
   xg: number,
   yg: number,
   stepsize: number,
-  factor: int,
-  checkall: boolean,
-): bool;
-declare function mp_linear_path_object<T extends objects | instance>(
-  path: paths,
+  factor: Int,
+  checkall: boolean
+): boolean;
+declare function mp_linear_path_object<T extends Objects | Instance>(
+  path: Path,
   xg: number,
   yg: number,
   stepsize: number,
-  obj: T,
-): bool;
-declare function mp_potential_path_object<T extends objects | instance>(
-  path: paths,
+  obj: T
+): boolean;
+declare function mp_potential_path_object<T extends Objects | Instance>(
+  path: Path,
   xg: number,
   yg: number,
   stepsize: number,
-  factor: int,
-  obj: T,
-): bool;
+  factor: Int,
+  obj: T
+): boolean;
 declare function mp_grid_create(
   left: number,
   top: number,
-  hcells: int,
-  vcells: int,
+  hcells: Int,
+  vcells: Int,
   cellwidth: number,
-  cellheight: number,
-): mp_grid;
-declare function mp_grid_destroy(id: mp_grid): void;
-declare function mp_grid_clear_all(id: mp_grid): void;
-declare function mp_grid_clear_cell(id: mp_grid, h: int, v: int): void;
+  cellheight: number
+): MpGrid;
+declare function mp_grid_destroy(id: MpGrid): void;
+declare function mp_grid_clear_all(id: MpGrid): void;
+declare function mp_grid_clear_cell(id: MpGrid, h: Int, v: Int): void;
 declare function mp_grid_clear_rectangle(
-  id: mp_grid,
-  left: int,
-  top: int,
-  right: int,
-  bottom: int,
+  id: MpGrid,
+  left: Int,
+  top: Int,
+  right: Int,
+  bottom: Int
 ): void;
-declare function mp_grid_add_cell(id: mp_grid, h: int, v: int): void;
-declare function mp_grid_get_cell(id: mp_grid, h: int, v: int): int;
+declare function mp_grid_add_cell(id: MpGrid, h: Int, v: Int): void;
+declare function mp_grid_get_cell(id: MpGrid, h: Int, v: Int): Int;
 declare function mp_grid_add_rectangle(
-  id: mp_grid,
-  left: int,
-  top: int,
-  right: int,
-  bottom: int,
+  id: MpGrid,
+  left: Int,
+  top: Int,
+  right: Int,
+  bottom: Int
 ): void;
-declare function mp_grid_add_instances<T extends objects | instance>(
-  id: mp_grid,
+declare function mp_grid_add_instances<T extends Objects | Instance>(
+  id: MpGrid,
   obj: T,
-  prec: boolean,
+  prec: boolean
 ): void;
 declare function mp_grid_path(
-  id: mp_grid,
-  path: paths,
+  id: MpGrid,
+  path: Path,
   xstart: number,
   ystart: number,
   xgoal: number,
   ygoal: number,
-  allowdiag: boolean,
-): bool;
-declare function mp_grid_draw(id: mp_grid): void;
-declare function mp_grid_to_ds_grid(src: mp_grid, dest: ds_grid<number>): bool;
-declare function collision_point<T extends objects | instance>(
+  allowdiag: boolean
+): boolean;
+declare function mp_grid_draw(id: MpGrid): void;
+declare function mp_grid_to_ds_grid(src: MpGrid, dest: DsGrid<number>): boolean;
+declare function collision_point<T extends Objects | Instance>(
   x: number,
   y: number,
   obj: T,
   prec: boolean,
-  notme: boolean,
+  notme: boolean
 ): T;
-declare function collision_rectangle<T extends objects | instance>(
+declare function collision_rectangle<T extends Objects | Instance>(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
   obj: T,
   prec: boolean,
-  notme: boolean,
+  notme: boolean
 ): T;
-declare function collision_circle<T extends objects | instance>(
+declare function collision_circle<T extends Objects | Instance>(
   x1: number,
   y1: number,
   radius: number,
   obj: T,
   prec: boolean,
-  notme: boolean,
+  notme: boolean
 ): T;
-declare function collision_ellipse<T extends objects | instance>(
+declare function collision_ellipse<T extends Objects | Instance>(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
   obj: T,
   prec: boolean,
-  notme: boolean,
+  notme: boolean
 ): T;
-declare function collision_line<T extends objects | instance>(
+declare function collision_line<T extends Objects | Instance>(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
   obj: T,
   prec: boolean,
-  notme: boolean,
+  notme: boolean
 ): T;
 declare function point_in_rectangle(
   px: number,
@@ -2410,8 +2562,8 @@ declare function point_in_rectangle(
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
-): bool;
+  y2: number
+): boolean;
 declare function point_in_triangle(
   px: number,
   py: number,
@@ -2420,15 +2572,15 @@ declare function point_in_triangle(
   x2: number,
   y2: number,
   x3: number,
-  y3: number,
-): bool;
+  y3: number
+): boolean;
 declare function point_in_circle(
   px: number,
   py: number,
   cx: number,
   cy: number,
-  rad: number,
-): bool;
+  rad: number
+): boolean;
 declare function rectangle_in_rectangle(
   sx1: number,
   sy1: number,
@@ -2437,8 +2589,8 @@ declare function rectangle_in_rectangle(
   dx1: number,
   dy1: number,
   dx2: number,
-  dy2: number,
-): bool;
+  dy2: number
+): boolean;
 declare function rectangle_in_triangle(
   sx1: number,
   sy1: number,
@@ -2449,8 +2601,8 @@ declare function rectangle_in_triangle(
   x2: number,
   y2: number,
   x3: number,
-  y3: number,
-): bool;
+  y3: number
+): boolean;
 declare function rectangle_in_circle(
   sx1: number,
   sy1: number,
@@ -2458,63 +2610,63 @@ declare function rectangle_in_circle(
   sy2: number,
   cx: number,
   cy: number,
-  rad: number,
-): bool;
-declare function instance_find<T extends objects>(obj: T, n: int): int;
-declare function instance_exists<T extends objects | instance>(obj: T): bool;
-declare function instance_number<T extends objects>(obj: T): bool;
-declare function instance_position<T extends objects | instance>(
+  rad: number
+): boolean;
+declare function instance_find<T extends Objects>(obj: T, n: Int): Int;
+declare function instance_exists<T extends Objects | Instance>(obj: T): boolean;
+declare function instance_number<T extends Objects>(obj: T): boolean;
+declare function instance_position<T extends Objects | Instance>(
   x: number,
   y: number,
-  obj: T,
+  obj: T
 ): T;
-declare function instance_nearest<T extends objects | instance>(
+declare function instance_nearest<T extends Objects | Instance>(
   x: number,
   y: number,
-  obj: T,
+  obj: T
 ): T;
-declare function instance_furthest<T extends objects | instance>(
+declare function instance_furthest<T extends Objects | Instance>(
   x: number,
   y: number,
-  obj: T,
+  obj: T
 ): T;
-declare function instance_place<T extends objects | instance>(
+declare function instance_place<T extends Objects | Instance>(
   x: number,
   y: number,
-  obj: T,
+  obj: T
 ): T;
-declare function instance_create_depth<T extends objects>(
+declare function instance_create_depth<T extends Objects>(
   x: number,
   y: number,
   depth: number,
-  obj: T,
+  obj: T
 ): T;
-declare function instance_create_layer<T extends objects>(
+declare function instance_create_layer<T extends Objects>(
   x: number,
   y: number,
-  layer_id_or_name: layer | string,
-  obj: T,
+  layer_id_or_name: Layer | string,
+  obj: T
 ): T;
 declare function instance_copy(performevent: any): any;
-declare function instance_change<T extends objects | instance>(
+declare function instance_change<T extends Objects | Instance>(
   obj: T,
-  performevents: boolean,
+  performevents: boolean
 ): void;
-declare function instance_destroy<T extends objects | instance>(
+declare function instance_destroy<T extends Objects | Instance>(
   id?: T,
-  execute_event_flag?: boolean,
+  execute_event_flag?: boolean
 ): void;
 declare function position_destroy(x: number, y: number): void;
-declare function position_change<T extends objects>(
+declare function position_change<T extends Objects>(
   x: number,
   y: number,
   obj: T,
-  performevents: boolean,
+  performevents: boolean
 ): void;
-declare function instance_id_get(index: int): any;
+declare function instance_id_get(index: Int): any;
 declare function instance_deactivate_all(notme: boolean): void;
-declare function instance_deactivate_object<T extends objects | instance>(
-  obj: T,
+declare function instance_deactivate_object<T extends Objects | Instance>(
+  obj: T
 ): void;
 declare function instance_deactivate_region(
   left: number,
@@ -2522,75 +2674,79 @@ declare function instance_deactivate_region(
   width: number,
   height: number,
   inside: boolean,
-  notme: boolean,
+  notme: boolean
 ): void;
 declare function instance_activate_all(): void;
-declare function instance_activate_object<T extends objects | instance>(
-  obj: T,
+declare function instance_activate_object<T extends Objects | Instance>(
+  obj: T
 ): void;
 declare function instance_activate_region(
   left: number,
   top: number,
   width: number,
   height: number,
-  inside: boolean,
+  inside: boolean
 ): void;
-declare function room_goto(numb: rooms): void;
+declare function room_goto(numb: Room): void;
 declare function room_goto_previous(): void;
 declare function room_goto_next(): void;
-declare function room_previous(numb: rooms): rooms;
-declare function room_next(numb: rooms): rooms;
+declare function room_previous(numb: Room): Room;
+declare function room_next(numb: Room): Room;
 declare function room_restart(): void;
 declare function game_end(): void;
 declare function game_restart(): void;
 declare function game_load(filename: string): void;
 declare function game_save(filename: string): void;
-declare function game_save_buffer(buffer: buffer): void;
-declare function game_load_buffer(buffer: buffer): void;
-declare function event_perform<T extends objects>(
-  type: event_type,
-  numb: int | event_number | T,
+declare function game_save_buffer(buffer: Buffer): void;
+declare function game_load_buffer(buffer: Buffer): void;
+declare function event_perform<T extends Objects>(
+  type: EventType,
+  numb: Int | typeof event_number | T
 ): void;
-declare function event_user(numb: int): void;
-declare function event_perform_object<T0 extends objects, T1 extends objects>(
+declare function event_user(numb: Int): void;
+declare function event_perform_object<T0 extends Objects, T1 extends Objects>(
   obj: T0,
-  type: event_type,
-  numb: int | event_number | T1,
+  type: EventType,
+  numb: Int | typeof event_number | T1
 ): void;
 declare function event_inherited(): void;
 declare function show_debug_message(str: any): void;
 declare function show_debug_overlay(enable: boolean): void;
 declare function debug_event(str: string): void;
-declare function alarm_get(index: int): int;
-declare function alarm_set(index: int, count: int): void;
-declare function keyboard_set_map(key1: int, key2: int): void;
-declare function keyboard_get_map(key: int): int;
+declare function alarm_get(index: Int): Int;
+declare function alarm_set(index: Int, count: Int): void;
+declare function keyboard_set_map(key1: Int, key2: Int): void;
+declare function keyboard_get_map(key: Int): Int;
 declare function keyboard_unset_map(): void;
-declare function keyboard_check(key: int): bool;
-declare function keyboard_check_pressed(key: int): bool;
-declare function keyboard_check_released(key: int): bool;
-declare function keyboard_check_direct(key: int): bool;
-declare function keyboard_get_numlock(): bool;
+declare function keyboard_check(key: Int): boolean;
+declare function keyboard_check_pressed(key: Int): boolean;
+declare function keyboard_check_released(key: Int): boolean;
+declare function keyboard_check_direct(key: Int): boolean;
+declare function keyboard_get_numlock(): boolean;
 declare function keyboard_set_numlock(on: boolean): void;
-declare function keyboard_key_press(key: int): void;
-declare function keyboard_key_release(key: int): void;
-declare function keyboard_clear(key: int): bool;
+declare function keyboard_key_press(key: Int): void;
+declare function keyboard_key_release(key: Int): void;
+declare function keyboard_clear(key: Int): boolean;
 declare function io_clear(): void;
-declare function mouse_check_button(button: mouse_button): bool;
-declare function mouse_check_button_pressed(button: mouse_button): bool;
-declare function mouse_check_button_released(button: mouse_button): bool;
-declare function mouse_wheel_up(): bool;
-declare function mouse_wheel_down(): bool;
-declare function mouse_clear(button: mouse_button): bool;
+declare function mouse_check_button(button: typeof mouse_button): boolean;
+declare function mouse_check_button_pressed(
+  button: typeof mouse_button
+): boolean;
+declare function mouse_check_button_released(
+  button: typeof mouse_button
+): boolean;
+declare function mouse_wheel_up(): boolean;
+declare function mouse_wheel_down(): boolean;
+declare function mouse_clear(button: typeof mouse_button): boolean;
 declare function draw_self(): void;
 declare function draw_sprite(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function draw_sprite_pos(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   x1: number,
   y1: number,
@@ -2600,65 +2756,65 @@ declare function draw_sprite_pos(
   y3: number,
   x4: number,
   y4: number,
-  alpha: number,
+  alpha: number
 ): void;
 declare function draw_sprite_ext(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   x: number,
   y: number,
   xscale: number,
   yscale: number,
   rot: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_sprite_stretched(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   x: number,
   y: number,
   w: number,
-  h: number,
+  h: number
 ): void;
 declare function draw_sprite_stretched_ext(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   x: number,
   y: number,
   w: number,
   h: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_sprite_tiled(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function draw_sprite_tiled_ext(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   x: number,
   y: number,
   xscale: number,
   yscale: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_sprite_part(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   left: number,
   top: number,
   width: number,
   height: number,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function draw_sprite_part_ext(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   left: number,
   top: number,
@@ -2668,11 +2824,11 @@ declare function draw_sprite_part_ext(
   y: number,
   xscale: number,
   yscale: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_sprite_general(
-  sprite: sprites,
+  Sprite: Sprite,
   subimg: number,
   left: number,
   top: number,
@@ -2683,41 +2839,41 @@ declare function draw_sprite_general(
   xscale: number,
   yscale: number,
   rot: number,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
-declare function draw_clear(col: int): void;
-declare function draw_clear_alpha(col: int, alpha: number): void;
+declare function draw_clear(col: Int): void;
+declare function draw_clear_alpha(col: Int, alpha: number): void;
 declare function draw_point(x: number, y: number): void;
 declare function draw_line(
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
+  y2: number
 ): void;
 declare function draw_line_width(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  w: number,
+  w: number
 ): void;
 declare function draw_rectangle(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  outline: boolean,
+  outline: boolean
 ): void;
 declare function draw_roundrect(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  outline: number,
+  outline: number
 ): void;
 declare function draw_roundrect_ext(
   x1: number,
@@ -2726,7 +2882,7 @@ declare function draw_roundrect_ext(
   y2: number,
   radiusx: number,
   radiusy: number,
-  outline: boolean,
+  outline: boolean
 ): void;
 declare function draw_triangle(
   x1: number,
@@ -2735,41 +2891,41 @@ declare function draw_triangle(
   y2: number,
   x3: number,
   y3: number,
-  outline: boolean,
+  outline: boolean
 ): void;
 declare function draw_circle(
   x: number,
   y: number,
   r: number,
-  outline: boolean,
+  outline: boolean
 ): void;
 declare function draw_ellipse(
   x1: number,
   y1: number,
   x2: number,
   y2: any,
-  outline: boolean,
+  outline: boolean
 ): void;
-declare function draw_set_circle_precision(precision: int): void;
+declare function draw_set_circle_precision(precision: Int): void;
 declare function draw_arrow(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  size: number,
+  size: number
 ): void;
 declare function draw_button(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  up: boolean,
+  up: boolean
 ): void;
 declare function draw_path(
-  path: paths,
+  path: Path,
   x: number,
   y: number,
-  absolute: boolean,
+  absolute: boolean
 ): void;
 declare function draw_healthbar(
   x1: number,
@@ -2777,80 +2933,80 @@ declare function draw_healthbar(
   x2: number,
   y2: number,
   amount: number,
-  backcol: int,
-  mincol: int,
-  maxcol: int,
+  backcol: Int,
+  mincol: Int,
+  maxcol: Int,
   direction: number,
   showback: boolean,
-  showborder: boolean,
+  showborder: boolean
 ): void;
-declare function draw_getpixel(x: number, y: number): int;
-declare function draw_getpixel_ext(x: number, y: number): int;
-declare function draw_set_colour(col: int): void;
-declare function draw_set_color(col: int): void;
+declare function draw_getpixel(x: number, y: number): Int;
+declare function draw_getpixel_ext(x: number, y: number): Int;
+declare function draw_set_colour(col: Int): void;
+declare function draw_set_color(col: Int): void;
 declare function draw_set_alpha(alpha: number): void;
-declare function draw_get_colour(): int;
-declare function draw_get_color(): int;
+declare function draw_get_colour(): Int;
+declare function draw_get_color(): Int;
 declare function draw_get_alpha(): number;
-declare function merge_colour(col1: int, col2: int, amount: number): int;
-declare function make_colour_rgb(red: int, green: int, blue: int): int;
+declare function merge_colour(col1: Int, col2: Int, amount: number): Int;
+declare function make_colour_rgb(red: Int, green: Int, blue: Int): Int;
 declare function make_colour_hsv(
   hue: number,
   saturation: number,
-  value: number,
-): int;
-declare function colour_get_red(col: int): int;
-declare function colour_get_green(col: int): int;
-declare function colour_get_blue(col: int): int;
-declare function colour_get_hue(col: int): number;
-declare function colour_get_saturation(col: int): number;
-declare function colour_get_value(col: int): number;
-declare function merge_color(col1: int, col2: int, amount: number): any;
-declare function make_color_rgb(red: int, green: int, blue: int): int;
+  value: number
+): Int;
+declare function colour_get_red(col: Int): Int;
+declare function colour_get_green(col: Int): Int;
+declare function colour_get_blue(col: Int): Int;
+declare function colour_get_hue(col: Int): number;
+declare function colour_get_saturation(col: Int): number;
+declare function colour_get_value(col: Int): number;
+declare function merge_color(col1: Int, col2: Int, amount: number): any;
+declare function make_color_rgb(red: Int, green: Int, blue: Int): Int;
 declare function make_color_hsv(
   hue: number,
   saturation: number,
-  value: number,
-): int;
-declare function color_get_red(col: int): int;
-declare function color_get_green(col: int): int;
-declare function color_get_blue(col: int): int;
-declare function color_get_hue(col: int): number;
-declare function color_get_saturation(col: int): number;
-declare function color_get_value(col: int): number;
+  value: number
+): Int;
+declare function color_get_red(col: Int): Int;
+declare function color_get_green(col: Int): Int;
+declare function color_get_blue(col: Int): Int;
+declare function color_get_hue(col: Int): number;
+declare function color_get_saturation(col: Int): number;
+declare function color_get_value(col: Int): number;
 declare function screen_save(fname: string): void;
 declare function screen_save_part(
   fname: string,
   x: number,
   y: number,
-  w: int,
-  h: int,
+  w: Int,
+  h: Int
 ): void;
-declare function draw_set_font(font: fonts): void;
-declare function draw_get_font(): fonts;
-declare function draw_set_halign(halign: horizontal_alignment): void;
-declare function draw_get_halign(): horizontal_alignment;
-declare function draw_set_valign(valign: vertical_alignment): void;
-declare function draw_get_valign(): vertical_alignment;
+declare function draw_set_font(font: Font): void;
+declare function draw_get_font(): Font;
+declare function draw_set_halign(halign: HorizontalAlignment): void;
+declare function draw_get_halign(): HorizontalAlignment;
+declare function draw_set_valign(valign: VerticalAlignment): void;
+declare function draw_get_valign(): VerticalAlignment;
 declare function draw_text(x: number, y: number, string: string): void;
 declare function draw_text_ext(
   x: number,
   y: number,
   string: string,
   sep: number,
-  w: number,
+  w: number
 ): void;
 declare function string_width(string: string): number;
 declare function string_height(string: string): number;
 declare function string_width_ext(
   string: string,
   sep: number,
-  w: number,
+  w: number
 ): number;
 declare function string_height_ext(
   string: string,
   sep: number,
-  w: number,
+  w: number
 ): number;
 declare function draw_text_transformed(
   x: number,
@@ -2858,7 +3014,7 @@ declare function draw_text_transformed(
   string: string,
   xscale: number,
   yscale: number,
-  angle: number,
+  angle: number
 ): void;
 declare function draw_text_ext_transformed(
   x: number,
@@ -2868,17 +3024,17 @@ declare function draw_text_ext_transformed(
   w: number,
   xscale: number,
   yscale: number,
-  angle: number,
+  angle: number
 ): void;
 declare function draw_text_colour(
   x: number,
   y: number,
   string: string,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
 declare function draw_text_ext_colour(
   x: number,
@@ -2886,11 +3042,11 @@ declare function draw_text_ext_colour(
   string: string,
   sep: number,
   w: number,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
 declare function draw_text_transformed_colour(
   x: number,
@@ -2899,11 +3055,11 @@ declare function draw_text_transformed_colour(
   xscale: number,
   yscale: number,
   angle: number,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
 declare function draw_text_ext_transformed_colour(
   x: number,
@@ -2914,21 +3070,21 @@ declare function draw_text_ext_transformed_colour(
   xscale: number,
   yscale: number,
   angle: number,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
 declare function draw_text_color(
   x: number,
   y: number,
   string: string,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
 declare function draw_text_ext_color(
   x: number,
@@ -2936,11 +3092,11 @@ declare function draw_text_ext_color(
   string: string,
   sep: number,
   w: number,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
 declare function draw_text_transformed_color(
   x: number,
@@ -2949,11 +3105,11 @@ declare function draw_text_transformed_color(
   xscale: number,
   yscale: number,
   angle: number,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
 declare function draw_text_ext_transformed_color(
   x: number,
@@ -2964,20 +3120,20 @@ declare function draw_text_ext_transformed_color(
   xscale: number,
   yscale: number,
   angle: number,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: number,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: number
 ): void;
-declare function draw_point_colour(x: number, y: number, col1: int): void;
+declare function draw_point_colour(x: number, y: number, col1: Int): void;
 declare function draw_line_colour(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  col1: int,
-  col2: int,
+  col1: Int,
+  col2: Int
 ): void;
 declare function draw_line_width_colour(
   x1: number,
@@ -2985,28 +3141,28 @@ declare function draw_line_width_colour(
   x2: number,
   y2: number,
   w: number,
-  col1: int,
-  col2: int,
+  col1: Int,
+  col2: Int
 ): void;
 declare function draw_rectangle_colour(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  col1: int,
-  col2: int,
-  col3: int,
-  col4: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  col3: Int,
+  col4: Int,
+  outline: boolean
 ): void;
 declare function draw_roundrect_colour(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  col1: int,
-  col2: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  outline: boolean
 ): void;
 declare function draw_roundrect_colour_ext(
   x1: number,
@@ -3015,9 +3171,9 @@ declare function draw_roundrect_colour_ext(
   y2: number,
   radiusx: number,
   radiusy: number,
-  col1: int,
-  col2: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  outline: boolean
 ): void;
 declare function draw_triangle_colour(
   x1: number,
@@ -3026,36 +3182,36 @@ declare function draw_triangle_colour(
   y2: number,
   x3: number,
   y3: number,
-  col1: int,
-  col2: int,
-  col3: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  col3: Int,
+  outline: boolean
 ): void;
 declare function draw_circle_colour(
   x: number,
   y: number,
   r: number,
-  col1: int,
-  col2: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  outline: boolean
 ): void;
 declare function draw_ellipse_colour(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  col1: int,
-  col2: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  outline: boolean
 ): void;
-declare function draw_point_color(x: number, y: number, col1: int): void;
+declare function draw_point_color(x: number, y: number, col1: Int): void;
 declare function draw_line_color(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  col1: int,
-  col2: int,
+  col1: Int,
+  col2: Int
 ): void;
 declare function draw_line_width_color(
   x1: number,
@@ -3063,28 +3219,28 @@ declare function draw_line_width_color(
   x2: number,
   y2: number,
   w: number,
-  col1: int,
-  col2: int,
+  col1: Int,
+  col2: Int
 ): void;
 declare function draw_rectangle_color(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  col1: int,
-  col2: int,
-  col3: int,
-  col4: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  col3: Int,
+  col4: Int,
+  outline: boolean
 ): void;
 declare function draw_roundrect_color(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  col1: int,
-  col2: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  outline: boolean
 ): void;
 declare function draw_roundrect_color_ext(
   x1: number,
@@ -3093,9 +3249,9 @@ declare function draw_roundrect_color_ext(
   y2: number,
   radiusx: number,
   radiusy: number,
-  col1: int,
-  col2: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  outline: boolean
 ): void;
 declare function draw_triangle_color(
   x1: number,
@@ -3104,140 +3260,140 @@ declare function draw_triangle_color(
   y2: number,
   x3: number,
   y3: number,
-  col1: int,
-  col2: int,
-  col3: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  col3: Int,
+  outline: boolean
 ): void;
 declare function draw_circle_color(
   x: number,
   y: number,
   r: number,
-  col1: int,
-  col2: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  outline: boolean
 ): void;
 declare function draw_ellipse_color(
   x1: number,
   y1: number,
   x2: number,
   y2: number,
-  col1: int,
-  col2: int,
-  outline: boolean,
+  col1: Int,
+  col2: Int,
+  outline: boolean
 ): void;
-declare function draw_primitive_begin(kind: primitive_type): void;
+declare function draw_primitive_begin(kind: PrimitiveType): void;
 declare function draw_vertex(x: number, y: number): void;
 declare function draw_vertex_colour(
   x: number,
   y: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_vertex_color(
   x: number,
   y: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_primitive_end(): void;
-declare function sprite_get_uvs(spr: sprites, subimg: int): int[];
-declare function font_get_uvs(font: fonts): fonts[];
-declare function sprite_get_texture(spr: sprites, subimg: int): texture;
-declare function font_get_texture(font: fonts): texture;
-declare function texture_get_width(texid: texture): int;
-declare function texture_get_height(texid: texture): int;
-declare function texture_get_uvs(texid: texture): int[];
+declare function sprite_get_uvs(spr: Sprite, subimg: Int): Int[];
+declare function font_get_uvs(font: Font): Font[];
+declare function sprite_get_texture(spr: Sprite, subimg: Int): Texture;
+declare function font_get_texture(font: Font): Texture;
+declare function texture_get_width(texid: Texture): Int;
+declare function texture_get_height(texid: Texture): Int;
+declare function texture_get_uvs(texid: Texture): Int[];
 declare function draw_primitive_begin_texture(
-  kind: primitive_type,
-  texid: texture,
+  kind: PrimitiveType,
+  texid: Texture
 ): void;
 declare function draw_vertex_texture(
   x: number,
   y: number,
   xtex: number,
-  ytex: number,
+  ytex: number
 ): void;
 declare function draw_vertex_texture_colour(
   x: number,
   y: number,
   xtex: number,
   ytex: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_vertex_texture_color(
   x: number,
   y: number,
   xtex: number,
   ytex: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
-declare function texture_global_scale(pow2integer: int): void;
-declare function surface_create(w: int, h: int): surface;
-declare function surface_create_ext(name: string, w: int, h: int): surface;
-declare function surface_resize(id: surface, width: int, height: int): void;
-declare function surface_free(id: surface): void;
-declare function surface_exists(id: surface): bool;
-declare function surface_get_width(id: surface): int;
-declare function surface_get_height(id: surface): int;
-declare function surface_get_texture(id: surface): texture;
-declare function surface_set_target(id: surface): void;
-declare function surface_set_target_ext(index: int, id: surface): bool;
-declare function surface_get_target(): surface;
-declare function surface_get_target_ext(index: int): surface;
+declare function texture_global_scale(pow2integer: Int): void;
+declare function surface_create(w: Int, h: Int): Surface;
+declare function surface_create_ext(name: string, w: Int, h: Int): Surface;
+declare function surface_resize(id: Surface, width: Int, height: Int): void;
+declare function surface_free(id: Surface): void;
+declare function surface_exists(id: Surface): boolean;
+declare function surface_get_width(id: Surface): Int;
+declare function surface_get_height(id: Surface): Int;
+declare function surface_get_texture(id: Surface): Texture;
+declare function surface_set_target(id: Surface): void;
+declare function surface_set_target_ext(index: Int, id: Surface): boolean;
+declare function surface_get_target(): Surface;
+declare function surface_get_target_ext(index: Int): Surface;
 declare function surface_reset_target(): void;
 declare function surface_depth_disable(disable: boolean): void;
-declare function surface_get_depth_disable(): bool;
-declare function draw_surface(id: surface, x: number, y: number): void;
+declare function surface_get_depth_disable(): boolean;
+declare function draw_surface(id: Surface, x: number, y: number): void;
 declare function draw_surface_stretched(
-  id: surface,
+  id: Surface,
   x: number,
   y: number,
   w: number,
-  h: number,
+  h: number
 ): void;
-declare function draw_surface_tiled(id: surface, x: number, y: number): void;
+declare function draw_surface_tiled(id: Surface, x: number, y: number): void;
 declare function draw_surface_part(
-  id: surface,
+  id: Surface,
   left: number,
   top: number,
   width: number,
   height: number,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function draw_surface_ext(
-  id: surface,
+  id: Surface,
   x: number,
   y: number,
   xscale: number,
   yscale: number,
   rot: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_surface_stretched_ext(
-  id: surface,
+  id: Surface,
   x: number,
   y: number,
   w: number,
   h: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_surface_tiled_ext(
-  id: surface,
+  id: Surface,
   x: number,
   y: number,
   xscale: number,
   yscale: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_surface_part_ext(
-  id: surface,
+  id: Surface,
   left: number,
   top: number,
   width: number,
@@ -3246,11 +3402,11 @@ declare function draw_surface_part_ext(
   y: number,
   xscale: number,
   yscale: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_surface_general(
-  id: surface,
+  id: Surface,
   left: number,
   top: number,
   width: number,
@@ -3260,93 +3416,93 @@ declare function draw_surface_general(
   xscale: number,
   yscale: number,
   rot: number,
-  c1: int,
-  c2: int,
-  c3: int,
-  c4: int,
-  alpha: int,
+  c1: Int,
+  c2: Int,
+  c3: Int,
+  c4: Int,
+  alpha: Int
 ): void;
-declare function surface_getpixel(id: surface, x: number, y: number): int;
-declare function surface_getpixel_ext(id: surface, x: number, y: number): int;
-declare function surface_save(id: surface, fname: string): void;
+declare function surface_getpixel(id: Surface, x: number, y: number): Int;
+declare function surface_getpixel_ext(id: Surface, x: number, y: number): Int;
+declare function surface_save(id: Surface, fname: string): void;
 declare function surface_save_part(
-  id: surface,
+  id: Surface,
   fname: string,
   x: number,
   y: number,
-  w: int,
-  h: int,
+  w: Int,
+  h: Int
 ): void;
 declare function surface_copy(
-  destination: surface,
+  destination: Surface,
   x: number,
   y: number,
-  source: surface,
+  source: Surface
 ): void;
 declare function surface_copy_part(
-  destination: surface,
+  destination: Surface,
   x: number,
   y: number,
-  source: surface,
+  source: Surface,
   xs: number,
   ys: number,
-  ws: int,
-  hs: int,
+  ws: Int,
+  hs: Int
 ): void;
 declare function application_surface_draw_enable(on_off: boolean): void;
-declare function application_get_position(): int[];
+declare function application_get_position(): Int[];
 declare function application_surface_enable(enable: boolean): void;
-declare function application_surface_is_enabled(): bool;
-declare function display_get_width(): int;
-declare function display_get_height(): int;
-declare function display_get_orientation(): display_orientation;
-declare function display_get_gui_width(): int;
-declare function display_get_gui_height(): int;
-declare function display_reset(aa_level: int, vsync: boolean): void;
+declare function application_surface_is_enabled(): boolean;
+declare function display_get_width(): Int;
+declare function display_get_height(): Int;
+declare function display_get_orientation(): DisplayOrientation;
+declare function display_get_gui_width(): Int;
+declare function display_get_gui_height(): Int;
+declare function display_reset(aa_level: Int, vsync: boolean): void;
 declare function display_mouse_get_x(): number;
 declare function display_mouse_get_y(): number;
 declare function display_mouse_set(x: number, y: number): void;
-declare function display_set_ui_visibility(flags: int): void;
+declare function display_set_ui_visibility(flags: Int): void;
 declare function window_set_fullscreen(full: boolean): void;
-declare function window_get_fullscreen(): bool;
+declare function window_get_fullscreen(): boolean;
 declare function window_set_caption(caption: string): void;
-declare function window_set_min_width(minwidth: int): void;
-declare function window_set_max_width(maxwidth: int): void;
-declare function window_set_min_height(minheight: int): void;
-declare function window_set_max_height(maxheight: int): void;
+declare function window_set_min_width(minwidth: Int): void;
+declare function window_set_max_width(maxwidth: Int): void;
+declare function window_set_min_height(minheight: Int): void;
+declare function window_set_max_height(maxheight: Int): void;
 declare function window_get_visible_rects(
-  startx: int,
-  starty: int,
-  endx: int,
-  endy: int,
-): int[];
+  startx: Int,
+  starty: Int,
+  endx: Int,
+  endy: Int
+): Int[];
 declare function window_get_caption(): string;
-declare function window_set_cursor(cursor: window_cursor): void;
-declare function window_get_cursor(): window_cursor;
-declare function window_set_colour(colour: int): void;
-declare function window_get_colour(): int;
-declare function window_set_color(color: int): void;
-declare function window_get_color(): int;
-declare function window_set_position(x: int, y: int): void;
-declare function window_set_size(w: int, h: int): void;
-declare function window_set_rectangle(x: int, y: int, w: int, h: int): void;
+declare function window_set_cursor(cursor: WindowCursor): void;
+declare function window_get_cursor(): WindowCursor;
+declare function window_set_colour(colour: Int): void;
+declare function window_get_colour(): Int;
+declare function window_set_color(color: Int): void;
+declare function window_get_color(): Int;
+declare function window_set_position(x: Int, y: Int): void;
+declare function window_set_size(w: Int, h: Int): void;
+declare function window_set_rectangle(x: Int, y: Int, w: Int, h: Int): void;
 declare function window_center(): void;
-declare function window_get_x(): int;
-declare function window_get_y(): int;
-declare function window_get_width(): int;
-declare function window_get_height(): int;
-declare function window_mouse_get_x(): int;
-declare function window_mouse_get_y(): int;
-declare function window_mouse_set(x: int, y: int): void;
-declare function window_view_mouse_get_x(id: int): number;
-declare function window_view_mouse_get_y(id: int): number;
+declare function window_get_x(): Int;
+declare function window_get_y(): Int;
+declare function window_get_width(): Int;
+declare function window_get_height(): Int;
+declare function window_mouse_get_x(): Int;
+declare function window_mouse_get_y(): Int;
+declare function window_mouse_set(x: Int, y: Int): void;
+declare function window_view_mouse_get_x(id: Int): number;
+declare function window_view_mouse_get_y(id: Int): number;
 declare function window_views_mouse_get_x(): number;
 declare function window_views_mouse_get_y(): number;
 declare function audio_listener_position(x: number, y: number, z: number): void;
 declare function audio_listener_velocity(
   vx: number,
   vy: number,
-  vz: number,
+  vz: number
 ): void;
 declare function audio_listener_orientation(
   lookat_x: number,
@@ -3354,50 +3510,50 @@ declare function audio_listener_orientation(
   lookat_z: number,
   up_x: number,
   up_y: number,
-  up_z: number,
+  up_z: number
 ): void;
 declare function audio_emitter_position(
-  emitterid: audio_emitter,
+  emitterid: AudioEmitter,
   x: number,
   y: number,
-  z: number,
+  z: number
 ): void;
-declare function audio_emitter_create(): audio_emitter;
-declare function audio_emitter_free(emitterid: audio_emitter): void;
-declare function audio_emitter_exists(emitterid: audio_emitter): bool;
+declare function audio_emitter_create(): AudioEmitter;
+declare function audio_emitter_free(emitterid: AudioEmitter): void;
+declare function audio_emitter_exists(emitterid: AudioEmitter): boolean;
 declare function audio_emitter_pitch(
-  emitterid: audio_emitter,
-  pitch: number,
+  emitterid: AudioEmitter,
+  pitch: number
 ): void;
 declare function audio_emitter_velocity(
-  emitterid: audio_emitter,
+  emitterid: AudioEmitter,
   vx: number,
   vy: number,
-  vz: number,
+  vz: number
 ): void;
 declare function audio_emitter_falloff(
-  emitterid: audio_emitter,
+  emitterid: AudioEmitter,
   falloff_ref_dist: number,
   falloff_max_dist: number,
-  falloff_factor: number,
+  falloff_factor: number
 ): void;
 declare function audio_emitter_gain(
-  emitterid: audio_emitter,
-  gain: number,
+  emitterid: AudioEmitter,
+  gain: number
 ): void;
 declare function audio_play_sound(
-  soundid: sounds,
-  priority: int,
-  loops: boolean,
-): sound_instance;
+  soundid: Sound,
+  priority: Int,
+  loops: boolean
+): SoundInstance;
 declare function audio_play_sound_on(
-  emitterid: audio_emitter,
-  soundid: sounds,
+  emitterid: AudioEmitter,
+  soundid: Sound,
   loops: boolean,
-  priority: int,
-): sound_instance;
+  priority: Int
+): SoundInstance;
 declare function audio_play_sound_at(
-  soundid: sounds,
+  soundid: Sound,
   x: number,
   y: number,
   z: number,
@@ -3405,543 +3561,537 @@ declare function audio_play_sound_at(
   falloff_max_dist: number,
   falloff_factor: number,
   loops: boolean,
-  priority: int,
-): sound_instance;
-declare function audio_stop_sound(soundid: sounds | sound_instance): void;
-declare function audio_resume_sound(soundid: sounds | sound_instance): void;
-declare function audio_pause_sound(soundid: sounds | sound_instance): void;
-declare function audio_channel_num(numchannels: int): void;
-declare function audio_sound_length(soundid: sounds | sound_instance): number;
-declare function audio_get_type(soundid: sounds | sound_instance): int;
-declare function audio_falloff_set_model(
-  falloffmode: audio_falloff_model,
-): void;
+  priority: Int
+): SoundInstance;
+declare function audio_stop_sound(soundid: Sound | SoundInstance): void;
+declare function audio_resume_sound(soundid: Sound | SoundInstance): void;
+declare function audio_pause_sound(soundid: Sound | SoundInstance): void;
+declare function audio_channel_num(numchannels: Int): void;
+declare function audio_sound_length(soundid: Sound | SoundInstance): number;
+declare function audio_get_type(soundid: Sound | SoundInstance): Int;
+declare function audio_falloff_set_model(falloffmode: AudioFalloffModel): void;
 declare function audio_master_gain(gain: number): void;
 declare function audio_sound_gain(
-  index: sounds | sound_instance,
+  index: Sound | SoundInstance,
   level: number,
-  time: number,
+  time: number
 ): void;
 declare function audio_sound_pitch(
-  index: sounds | sound_instance,
-  pitch: number,
+  index: Sound | SoundInstance,
+  pitch: number
 ): void;
 declare function audio_stop_all(): void;
 declare function audio_resume_all(): void;
 declare function audio_pause_all(): void;
-declare function audio_is_playing(soundid: sounds | sound_instance): bool;
-declare function audio_is_paused(soundid: sounds | sound_instance): bool;
-declare function audio_exists(soundid: sounds | sound_instance): bool;
-declare function audio_system_is_available(): bool;
-declare function audio_sound_is_playable(soundid: sounds): bool;
-declare function audio_emitter_get_gain(emitterid: audio_emitter): number;
-declare function audio_emitter_get_pitch(emitterid: audio_emitter): number;
-declare function audio_emitter_get_x(emitterid: audio_emitter): number;
-declare function audio_emitter_get_y(emitterid: audio_emitter): number;
-declare function audio_emitter_get_z(emitterid: audio_emitter): number;
-declare function audio_emitter_get_vx(emitterid: audio_emitter): number;
-declare function audio_emitter_get_vy(emitterid: audio_emitter): number;
-declare function audio_emitter_get_vz(emitterid: audio_emitter): number;
+declare function audio_is_playing(soundid: Sound | SoundInstance): boolean;
+declare function audio_is_paused(soundid: Sound | SoundInstance): boolean;
+declare function audio_exists(soundid: Sound | SoundInstance): boolean;
+declare function audio_system_is_available(): boolean;
+declare function audio_sound_is_playable(soundid: Sound): boolean;
+declare function audio_emitter_get_gain(emitterid: AudioEmitter): number;
+declare function audio_emitter_get_pitch(emitterid: AudioEmitter): number;
+declare function audio_emitter_get_x(emitterid: AudioEmitter): number;
+declare function audio_emitter_get_y(emitterid: AudioEmitter): number;
+declare function audio_emitter_get_z(emitterid: AudioEmitter): number;
+declare function audio_emitter_get_vx(emitterid: AudioEmitter): number;
+declare function audio_emitter_get_vy(emitterid: AudioEmitter): number;
+declare function audio_emitter_get_vz(emitterid: AudioEmitter): number;
 declare function audio_listener_set_position(
-  index: int,
+  index: Int,
   x: number,
   y: number,
-  z: number,
+  z: number
 ): void;
 declare function audio_listener_set_velocity(
-  index: int,
+  index: Int,
   vx: number,
   vy: number,
-  vz: number,
+  vz: number
 ): void;
 declare function audio_listener_set_orientation(
-  index: int,
+  index: Int,
   lookat_x: number,
   lookat_y: number,
   lookat_z: number,
   up_x: number,
   up_y: number,
-  up_z: number,
+  up_z: number
 ): void;
-declare function audio_listener_get_data(index: int): ds_map<string, number>;
-declare function audio_set_master_gain(listenerIndex: int, gain: number): void;
-declare function audio_get_master_gain(listenerIndex: int): number;
-declare function audio_sound_get_gain(index: sounds | sound_instance): number;
-declare function audio_sound_get_pitch(index: sounds | sound_instance): number;
-declare function audio_get_name(index: sounds | sound_instance): string;
+declare function audio_listener_get_data(index: Int): DsMap<string, number>;
+declare function audio_set_master_gain(listenerIndex: Int, gain: number): void;
+declare function audio_get_master_gain(listenerIndex: Int): number;
+declare function audio_sound_get_gain(index: Sound | SoundInstance): number;
+declare function audio_sound_get_pitch(index: Sound | SoundInstance): number;
+declare function audio_get_name(index: Sound | SoundInstance): string;
 declare function audio_sound_set_track_position(
-  index: sounds | sound_instance,
-  time: number,
+  index: Sound | SoundInstance,
+  time: number
 ): void;
 declare function audio_sound_get_track_position(
-  index: sounds | sound_instance,
+  index: Sound | SoundInstance
 ): number;
-declare function audio_create_stream(filename: string): sounds;
-declare function audio_destroy_stream(stream_sound_id: sounds): void;
-declare function audio_create_sync_group(looping: boolean): sound_sync_group;
-declare function audio_destroy_sync_group(
-  sync_group_id: sound_sync_group,
-): void;
+declare function audio_create_stream(filename: string): Sound;
+declare function audio_destroy_stream(stream_sound_id: Sound): void;
+declare function audio_create_sync_group(looping: boolean): SoundSyncGroup;
+declare function audio_destroy_sync_group(sync_group_id: SoundSyncGroup): void;
 declare function audio_play_in_sync_group(
-  sync_group_id: sound_sync_group,
-  soundid: sounds,
-): sound_instance;
-declare function audio_start_sync_group(sync_group_id: sound_sync_group): void;
-declare function audio_stop_sync_group(sync_group_id: sound_sync_group): void;
-declare function audio_pause_sync_group(sync_group_id: sound_sync_group): void;
-declare function audio_resume_sync_group(sync_group_id: sound_sync_group): void;
+  sync_group_id: SoundSyncGroup,
+  soundid: Sound
+): SoundInstance;
+declare function audio_start_sync_group(sync_group_id: SoundSyncGroup): void;
+declare function audio_stop_sync_group(sync_group_id: SoundSyncGroup): void;
+declare function audio_pause_sync_group(sync_group_id: SoundSyncGroup): void;
+declare function audio_resume_sync_group(sync_group_id: SoundSyncGroup): void;
 declare function audio_sync_group_get_track_pos(
-  sync_group_id: sound_sync_group,
+  sync_group_id: SoundSyncGroup
 ): number;
 declare function audio_sync_group_debug(
-  sync_group_id: sound_sync_group | int,
+  sync_group_id: SoundSyncGroup | Int
 ): void;
 declare function audio_sync_group_is_playing(
-  sync_group_id: sound_sync_group,
-): bool;
+  sync_group_id: SoundSyncGroup
+): boolean;
 declare function audio_debug(enable: boolean): void;
-declare function audio_group_load(groupId: audio_group): bool;
-declare function audio_group_unload(groupId: audio_group): bool;
-declare function audio_group_is_loaded(groupId: audio_group): bool;
-declare function audio_group_load_progress(groupId: audio_group): number;
-declare function audio_group_name(groupId: audio_group): string;
-declare function audio_group_stop_all(groupId: audio_group): void;
+declare function audio_group_load(groupId: AudioGroup): boolean;
+declare function audio_group_unload(groupId: AudioGroup): boolean;
+declare function audio_group_is_loaded(groupId: AudioGroup): boolean;
+declare function audio_group_load_progress(groupId: AudioGroup): number;
+declare function audio_group_name(groupId: AudioGroup): string;
+declare function audio_group_stop_all(groupId: AudioGroup): void;
 declare function audio_group_set_gain(
-  groupId: audio_group,
+  groupId: AudioGroup,
   volume: number,
-  time: number,
+  time: number
 ): void;
 declare function audio_create_buffer_sound(
-  bufferId: buffer,
-  format: buffer_type,
-  rate: int,
-  offset: int,
-  length: int,
-  channels: audio_sound_channel,
-): sounds;
-declare function audio_free_buffer_sound(soundId: sounds): void;
+  bufferId: Buffer,
+  format: BufferType,
+  rate: Int,
+  offset: Int,
+  length: Int,
+  channels: AudioSoundChannel
+): Sound;
+declare function audio_free_buffer_sound(soundId: Sound): void;
 declare function audio_create_play_queue(
-  bufferFormat: buffer_type,
-  sampleRate: int,
-  channels: audio_sound_channel,
-): sound_play_queue;
-declare function audio_free_play_queue(queueId: sound_play_queue): void;
+  bufferFormat: BufferType,
+  sampleRate: Int,
+  channels: AudioSoundChannel
+): SoundPlayQueue;
+declare function audio_free_play_queue(queueId: SoundPlayQueue): void;
 declare function audio_queue_sound(
-  queueId: sound_play_queue,
-  buffer_id: buffer,
-  offset: int,
-  length: int,
+  queueId: SoundPlayQueue,
+  buffer_id: Buffer,
+  offset: Int,
+  length: Int
 ): void;
-declare function audio_get_recorder_count(): int;
-declare function audio_get_recorder_info(
-  recorder_num: int,
-): ds_map<string, any>;
-declare function audio_start_recording(recorder_num: int): buffer;
-declare function audio_stop_recording(channel_index: int): void;
+declare function audio_get_recorder_count(): Int;
+declare function audio_get_recorder_info(recorder_num: Int): DsMap<string, any>;
+declare function audio_start_recording(recorder_num: Int): Buffer;
+declare function audio_stop_recording(channel_index: Int): void;
 declare function audio_sound_get_listener_mask(
-  soundid: sounds | sound_instance,
-): int;
-declare function audio_emitter_get_listener_mask(emitterid: audio_emitter): int;
-declare function audio_get_listener_mask(): int;
+  soundid: Sound | SoundInstance
+): Int;
+declare function audio_emitter_get_listener_mask(emitterid: AudioEmitter): Int;
+declare function audio_get_listener_mask(): Int;
 declare function audio_sound_set_listener_mask(
-  soundid: sounds | sound_instance,
-  mask: int,
+  soundid: Sound | SoundInstance,
+  mask: Int
 ): void;
 declare function audio_emitter_set_listener_mask(
-  emitterid: audio_emitter,
-  mask: int,
+  emitterid: AudioEmitter,
+  mask: Int
 ): void;
-declare function audio_set_listener_mask(mask: int): void;
-declare function audio_get_listener_count(): int;
-declare function audio_get_listener_info(index: int): ds_map<string, any>;
+declare function audio_set_listener_mask(mask: Int): void;
+declare function audio_get_listener_count(): Int;
+declare function audio_get_listener_info(index: Int): DsMap<string, any>;
 declare function show_message(str: string): void;
 declare function show_message_async(str: string): void;
 declare function clickable_add(
   x: number,
   y: number,
-  spritetpe: html_clickable_tpe,
+  spritetpe: HtmlClickableTpe,
   URL: string,
   target: string,
-  params: string,
-): html_clickable;
+  params: string
+): HtmlClickable;
 declare function clickable_add_ext(
   x: number,
   y: number,
-  spritetpe: html_clickable_tpe,
+  spritetpe: HtmlClickableTpe,
   URL: string,
   target: string,
   params: string,
   scale: number,
-  alpha: number,
-): html_clickable;
+  alpha: number
+): HtmlClickable;
 declare function clickable_change(
-  buttonid: html_clickable,
-  spritetpe: html_clickable_tpe,
+  buttonid: HtmlClickable,
+  spritetpe: HtmlClickableTpe,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function clickable_change_ext(
-  buttonid: html_clickable,
-  spritetpe: html_clickable_tpe,
+  buttonid: HtmlClickable,
+  spritetpe: HtmlClickableTpe,
   x: number,
   y: number,
   scale: number,
-  alpha: number,
+  alpha: number
 ): void;
-declare function clickable_delete(buttonid: html_clickable): void;
-declare function clickable_exists(index: html_clickable): bool;
+declare function clickable_delete(buttonid: HtmlClickable): void;
+declare function clickable_exists(index: HtmlClickable): boolean;
 declare function clickable_set_style(
-  buttonid: html_clickable,
-  map: ds_map<string, string>,
-): bool;
-declare function show_question(str: string): bool;
-declare function show_question_async(str: string): int;
+  buttonid: HtmlClickable,
+  map: DsMap<string, string>
+): boolean;
+declare function show_question(str: string): boolean;
+declare function show_question_async(str: string): Int;
 declare function get_integer(str: string, def: number): number;
 declare function get_string(str: string, def: string): string;
-declare function get_integer_async(str: string, def: number): int;
-declare function get_string_async(str: string, def: string): int;
-declare function get_login_async(username: string, password: string): int;
+declare function get_integer_async(str: string, def: number): Int;
+declare function get_string_async(str: string, def: string): Int;
+declare function get_login_async(username: string, password: string): Int;
 declare function get_open_filename(filter: string, fname: string): string;
 declare function get_save_filename(filter: string, fname: string): string;
 declare function get_open_filename_ext(
   filter: string,
   fname: string,
   dir: string,
-  title: string,
+  title: string
 ): string;
 declare function get_save_filename_ext(
   filter: string,
   fname: string,
   dir: string,
-  title: string,
+  title: string
 ): string;
 declare function show_error(str: string, abort: boolean): void;
 declare function highscore_clear(): void;
 declare function highscore_add(str: string, numb: number): void;
-declare function highscore_value(place: int): number;
-declare function highscore_name(place: int): string;
+declare function highscore_value(place: Int): number;
+declare function highscore_name(place: Int): string;
 declare function draw_highscore(
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
+  y2: number
 ): void;
-declare function sprite_exists(ind: sprites): bool;
-declare function sprite_get_name(ind: sprites): string;
-declare function sprite_get_number(ind: sprites): int;
-declare function sprite_get_width(ind: sprites): int;
-declare function sprite_get_height(ind: sprites): int;
-declare function sprite_get_xoffset(ind: sprites): number;
-declare function sprite_get_yoffset(ind: sprites): number;
-declare function sprite_get_bbox_mode(ind: sprites): bbox_mode;
-declare function sprite_get_bbox_left(ind: sprites): number;
-declare function sprite_get_bbox_right(ind: sprites): number;
-declare function sprite_get_bbox_top(ind: sprites): number;
-declare function sprite_get_bbox_bottom(ind: sprites): number;
-declare function sprite_set_bbox_mode(ind: sprites, mode: bbox_mode): void;
+declare function sprite_exists(ind: Sprite): boolean;
+declare function sprite_get_name(ind: Sprite): string;
+declare function sprite_get_number(ind: Sprite): Int;
+declare function sprite_get_width(ind: Sprite): Int;
+declare function sprite_get_height(ind: Sprite): Int;
+declare function sprite_get_xoffset(ind: Sprite): number;
+declare function sprite_get_yoffset(ind: Sprite): number;
+declare function sprite_get_bbox_mode(ind: Sprite): BboxMode;
+declare function sprite_get_bbox_left(ind: Sprite): number;
+declare function sprite_get_bbox_right(ind: Sprite): number;
+declare function sprite_get_bbox_top(ind: Sprite): number;
+declare function sprite_get_bbox_bottom(ind: Sprite): number;
+declare function sprite_set_bbox_mode(ind: Sprite, mode: BboxMode): void;
 declare function sprite_set_bbox(
-  ind: sprites,
+  ind: Sprite,
   left: number,
   top: number,
   right: number,
-  bottom: number,
+  bottom: number
 ): void;
-declare function sprite_save(ind: sprites, subimg: int, fname: string): void;
-declare function sprite_save_strip(ind: sprites, fname: string): void;
-declare function sprite_set_cache_size(ind: sprites, max: int): void;
+declare function sprite_save(ind: Sprite, subimg: Int, fname: string): void;
+declare function sprite_save_strip(ind: Sprite, fname: string): void;
+declare function sprite_set_cache_size(ind: Sprite, max: Int): void;
 declare function sprite_set_cache_size_ext(
-  ind: sprites,
-  image: int,
-  max: int,
+  ind: Sprite,
+  image: Int,
+  max: Int
 ): void;
-declare function sprite_get_tpe(index: any, subindex: any): html_clickable_tpe;
-declare function sprite_prefetch(ind: sprites): int;
-declare function sprite_prefetch_multi(indarray: sprites[]): int;
-declare function sprite_flush(ind: sprites): int;
-declare function sprite_flush_multi(indarray: sprites[]): int;
-declare function font_exists(ind: fonts): bool;
-declare function font_get_name(ind: fonts): string;
-declare function font_get_fontname(ind: fonts): string;
-declare function font_get_bold(ind: fonts): bool;
-declare function font_get_italic(ind: fonts): bool;
-declare function font_get_first(ind: fonts): int;
-declare function font_get_last(ind: fonts): int;
-declare function font_get_size(ind: fonts): int;
-declare function font_set_cache_size(font: fonts, max: int): void;
-declare function path_exists(ind: paths): bool;
-declare function path_get_name(ind: paths): string;
-declare function path_get_length(ind: paths): number;
-declare function path_get_kind(ind: paths): bool;
-declare function path_get_closed(ind: paths): bool;
-declare function path_get_precision(ind: paths): int;
-declare function path_get_number(ind: paths): int;
-declare function path_get_point_x(ind: paths, n: int): number;
-declare function path_get_point_y(ind: paths, n: int): number;
-declare function path_get_point_speed(ind: paths, n: int): number;
-declare function path_get_x(ind: paths, pos: number): number;
-declare function path_get_y(ind: paths, pos: number): number;
-declare function path_get_speed(ind: paths, pos: number): number;
-declare function script_exists(ind: scripts): bool;
-declare function script_get_name(ind: scripts): string;
-declare function timeline_add(): timelines;
-declare function timeline_delete(ind: timelines): void;
-declare function timeline_clear(ind: timelines): void;
-declare function timeline_exists(ind: timelines): bool;
-declare function timeline_get_name(ind: timelines): string;
-declare function timeline_moment_clear(ind: timelines, step: int): void;
+declare function sprite_get_tpe(index: any, subindex: any): HtmlClickableTpe;
+declare function sprite_prefetch(ind: Sprite): Int;
+declare function sprite_prefetch_multi(indarray: Sprite[]): Int;
+declare function sprite_flush(ind: Sprite): Int;
+declare function sprite_flush_multi(indarray: Sprite[]): Int;
+declare function font_exists(ind: Font): boolean;
+declare function font_get_name(ind: Font): string;
+declare function font_get_fontname(ind: Font): string;
+declare function font_get_bold(ind: Font): boolean;
+declare function font_get_italic(ind: Font): boolean;
+declare function font_get_first(ind: Font): Int;
+declare function font_get_last(ind: Font): Int;
+declare function font_get_size(ind: Font): Int;
+declare function font_set_cache_size(font: Font, max: Int): void;
+declare function path_exists(ind: Path): boolean;
+declare function path_get_name(ind: Path): string;
+declare function path_get_length(ind: Path): number;
+declare function path_get_kind(ind: Path): boolean;
+declare function path_get_closed(ind: Path): boolean;
+declare function path_get_precision(ind: Path): Int;
+declare function path_get_number(ind: Path): Int;
+declare function path_get_point_x(ind: Path, n: Int): number;
+declare function path_get_point_y(ind: Path, n: Int): number;
+declare function path_get_point_speed(ind: Path, n: Int): number;
+declare function path_get_x(ind: Path, pos: number): number;
+declare function path_get_y(ind: Path, pos: number): number;
+declare function path_get_speed(ind: Path, pos: number): number;
+declare function script_exists(ind: Script): boolean;
+declare function script_get_name(ind: Script): string;
+declare function timeline_add(): Timeline;
+declare function timeline_delete(ind: Timeline): void;
+declare function timeline_clear(ind: Timeline): void;
+declare function timeline_exists(ind: Timeline): boolean;
+declare function timeline_get_name(ind: Timeline): string;
+declare function timeline_moment_clear(ind: Timeline, step: Int): void;
 declare function timeline_moment_add_script(
-  ind: timelines,
-  step: int,
-  script: scripts,
+  ind: Timeline,
+  step: Int,
+  script: Script
 ): void;
-declare function timeline_size(ind: timelines): int;
-declare function timeline_max_moment(ind: timelines): int;
-declare function object_exists<T extends objects>(ind: T): bool;
-declare function object_get_name<T extends objects>(ind: T): string;
-declare function object_get_sprite<T extends objects>(ind: T): sprites;
-declare function object_get_solid<T extends objects>(ind: T): bool;
-declare function object_get_visible<T extends objects>(ind: T): bool;
-declare function object_get_persistent<T extends objects>(ind: T): bool;
-declare function object_get_mask<T extends objects>(ind: T): sprites;
-declare function object_get_parent<T extends objects>(ind: T): any;
-declare function object_get_physics<T extends objects>(ind: T): bool;
-declare function object_is_ancestor<T0 extends objects, T1 extends objects>(
+declare function timeline_size(ind: Timeline): Int;
+declare function timeline_max_moment(ind: Timeline): Int;
+declare function object_exists<T extends Objects>(ind: T): boolean;
+declare function object_get_name<T extends Objects>(ind: T): string;
+declare function object_get_sprite<T extends Objects>(ind: T): Sprite;
+declare function object_get_solid<T extends Objects>(ind: T): boolean;
+declare function object_get_visible<T extends Objects>(ind: T): boolean;
+declare function object_get_persistent<T extends Objects>(ind: T): boolean;
+declare function object_get_mask<T extends Objects>(ind: T): Sprite;
+declare function object_get_parent<T extends Objects>(ind: T): any;
+declare function object_get_physics<T extends Objects>(ind: T): boolean;
+declare function object_is_ancestor<T0 extends Objects, T1 extends Objects>(
   ind_child: T0,
-  ind_parent: T1,
-): bool;
-declare function room_exists(ind: rooms): bool;
-declare function room_get_name(ind: rooms): string;
+  ind_parent: T1
+): boolean;
+declare function room_exists(ind: Room): boolean;
+declare function room_get_name(ind: Room): string;
 declare function sprite_set_offset(
-  ind: sprites,
+  ind: Sprite,
   xoff: number,
-  yoff: number,
+  yoff: number
 ): void;
-declare function sprite_duplicate(ind: sprites): sprites;
-declare function sprite_assign(ind: sprites, source: sprites): void;
-declare function sprite_merge(ind1: sprites, ind2: sprites): void;
+declare function sprite_duplicate(ind: Sprite): Sprite;
+declare function sprite_assign(ind: Sprite, source: Sprite): void;
+declare function sprite_merge(ind1: Sprite, ind2: Sprite): void;
 declare function sprite_add(
   fname: string,
   imgnumb: number,
   removeback: boolean,
   smooth: boolean,
   xorig: number,
-  yorig: number,
-): sprites;
+  yorig: number
+): Sprite;
 declare function sprite_replace(
-  ind: sprites,
+  ind: Sprite,
   fname: string,
   imgnumb: number,
   removeback: boolean,
   smooth: boolean,
   xorig: number,
-  yorig: number,
+  yorig: number
 ): void;
 declare function sprite_create_from_surface(
-  id: surface,
-  x: int,
-  y: int,
-  w: int,
-  h: int,
+  id: Surface,
+  x: Int,
+  y: Int,
+  w: Int,
+  h: Int,
   removeback: boolean,
   smooth: boolean,
   xorig: number,
-  yorig: number,
-): sprites;
+  yorig: number
+): Sprite;
 declare function sprite_add_from_surface(
-  sprite: sprites,
-  surface: surface,
-  x: int,
-  y: int,
-  w: int,
-  h: int,
+  Sprite: Sprite,
+  Surface: Surface,
+  x: Int,
+  y: Int,
+  w: Int,
+  h: Int,
   removeback: boolean,
-  smooth: boolean,
-): sprites;
-declare function sprite_delete(ind: sprites): void;
-declare function sprite_set_alpha_from_sprite(ind: sprites, spr: sprites): void;
+  smooth: boolean
+): Sprite;
+declare function sprite_delete(ind: Sprite): void;
+declare function sprite_set_alpha_from_sprite(ind: Sprite, spr: Sprite): void;
 declare function sprite_collision_mask(
-  ind: sprites,
+  ind: Sprite,
   sepmasks: boolean,
-  bboxmode: int,
+  bboxmode: Int,
   bbleft: number,
   bbtop: number,
   bbright: number,
   bbbottom: number,
-  kind: bbox_kind,
-  tolerance: int,
+  kind: BboxKind,
+  tolerance: Int
 ): void;
 declare function font_add_enable_aa(enable: boolean): void;
-declare function font_add_get_enable_aa(): bool;
+declare function font_add_get_enable_aa(): boolean;
 declare function font_add(
   name: string,
   size: number,
   bold: boolean,
   italic: boolean,
-  first: int,
-  last: int,
-): fonts;
+  first: Int,
+  last: Int
+): Font;
 declare function font_add_sprite(
-  spr: sprites,
-  first: int,
+  spr: Sprite,
+  first: Int,
   prop: boolean,
-  sep: number,
-): fonts;
+  sep: number
+): Font;
 declare function font_add_sprite_ext(
-  spr: sprites,
+  spr: Sprite,
   mapstring: string,
   prop: boolean,
-  sep: number,
-): fonts;
+  sep: number
+): Font;
 declare function font_replace(
-  ind: fonts,
+  ind: Font,
   name: string,
   size: number,
   bold: boolean,
   italic: boolean,
-  first: int,
-  last: int,
+  first: Int,
+  last: Int
 ): void;
 declare function font_replace_sprite(
-  ind: fonts,
-  spr: sprites,
-  first: int,
+  ind: Font,
+  spr: Sprite,
+  first: Int,
   prop: boolean,
-  sep: number,
+  sep: number
 ): void;
 declare function font_replace_sprite_ext(
-  font: fonts,
-  spr: sprites,
+  font: Font,
+  spr: Sprite,
   mapstring: string,
   prop: boolean,
-  sep: number,
+  sep: number
 ): void;
-declare function font_delete(ind: fonts): void;
-declare function path_set_kind(ind: paths, kind: boolean): void;
-declare function path_set_closed(ind: paths, closed: boolean): void;
-declare function path_set_precision(ind: paths, prec: int): void;
-declare function path_add(): paths;
-declare function path_assign(target: paths, source: paths): void;
-declare function path_duplicate(ind: paths): paths;
-declare function path_append(ind: paths, path: paths): void;
-declare function path_delete(ind: paths): void;
+declare function font_delete(ind: Font): void;
+declare function path_set_kind(ind: Path, kind: boolean): void;
+declare function path_set_closed(ind: Path, closed: boolean): void;
+declare function path_set_precision(ind: Path, prec: Int): void;
+declare function path_add(): Path;
+declare function path_assign(target: Path, source: Path): void;
+declare function path_duplicate(ind: Path): Path;
+declare function path_append(ind: Path, path: Path): void;
+declare function path_delete(ind: Path): void;
 declare function path_add_point(
-  ind: paths,
+  ind: Path,
   x: number,
   y: number,
-  speed: number,
+  speed: number
 ): void;
 declare function path_insert_point(
-  ind: paths,
-  n: int,
+  ind: Path,
+  n: Int,
   x: number,
   y: number,
-  speed: number,
+  speed: number
 ): void;
 declare function path_change_point(
-  ind: paths,
-  n: int,
+  ind: Path,
+  n: Int,
   x: number,
   y: number,
-  speed: number,
+  speed: number
 ): void;
-declare function path_delete_point(ind: paths, n: int): void;
-declare function path_clear_points(ind: paths): void;
-declare function path_reverse(ind: paths): void;
-declare function path_mirror(ind: paths): void;
-declare function path_flip(ind: paths): void;
-declare function path_rotate(ind: paths, angle: number): void;
-declare function path_rescale(ind: paths, xscale: number, yscale: number): void;
-declare function path_shift(ind: paths, xshift: number, yshift: number): void;
-declare function script_execute(ind: scripts, ...values: any[]): any;
-declare function object_set_sprite<T extends objects>(
+declare function path_delete_point(ind: Path, n: Int): void;
+declare function path_clear_points(ind: Path): void;
+declare function path_reverse(ind: Path): void;
+declare function path_mirror(ind: Path): void;
+declare function path_flip(ind: Path): void;
+declare function path_rotate(ind: Path, angle: number): void;
+declare function path_rescale(ind: Path, xscale: number, yscale: number): void;
+declare function path_shift(ind: Path, xshift: number, yshift: number): void;
+declare function script_execute(ind: Script, ...values: any[]): any;
+declare function object_set_sprite<T extends Objects>(
   ind: T,
-  spr: sprites,
+  spr: Sprite
 ): void;
-declare function object_set_solid<T extends objects>(
+declare function object_set_solid<T extends Objects>(
   ind: T,
-  solid: boolean,
+  solid: boolean
 ): void;
-declare function object_set_visible<T extends objects>(
+declare function object_set_visible<T extends Objects>(
   ind: T,
-  vis: boolean,
+  vis: boolean
 ): void;
-declare function object_set_persistent<T extends objects>(
+declare function object_set_persistent<T extends Objects>(
   ind: T,
-  pers: boolean,
+  pers: boolean
 ): void;
-declare function object_set_mask<T extends objects>(ind: T, spr: sprites): void;
-declare function room_set_width(ind: rooms, w: number): void;
-declare function room_set_height(ind: rooms, h: number): void;
-declare function room_set_persistent(ind: rooms, pers: boolean): void;
+declare function object_set_mask<T extends Objects>(ind: T, spr: Sprite): void;
+declare function room_set_width(ind: Room, w: number): void;
+declare function room_set_height(ind: Room, h: number): void;
+declare function room_set_persistent(ind: Room, pers: boolean): void;
 declare function room_set_viewport(
-  ind: rooms,
-  vind: int,
+  ind: Room,
+  vind: Int,
   vis: boolean,
   xport: number,
   yport: number,
   wport: number,
-  hport: number,
+  hport: number
 ): void;
-declare function room_get_viewport(ind: rooms, vind: int): any[];
-declare function room_set_view_enabled(ind: rooms, val: boolean): void;
-declare function room_add(): rooms;
-declare function room_duplicate(ind: rooms): rooms;
-declare function room_assign(ind: rooms, source: rooms): void;
-declare function room_instance_add<T extends objects>(
-  ind: rooms,
+declare function room_get_viewport(ind: Room, vind: Int): any[];
+declare function room_set_view_enabled(ind: Room, val: boolean): void;
+declare function room_add(): Room;
+declare function room_duplicate(ind: Room): Room;
+declare function room_assign(ind: Room, source: Room): void;
+declare function room_instance_add<T extends Objects>(
+  ind: Room,
   x: number,
   y: number,
-  obj: T,
+  obj: T
 ): void;
-declare function room_instance_clear(ind: rooms): void;
+declare function room_instance_clear(ind: Room): void;
 declare function asset_get_index(name: string): any;
-declare function asset_get_type(name: string): asset_type;
-declare function file_text_open_from_string(content: string): file_handle;
-declare function file_text_open_read(fname: string): file_handle;
-declare function file_text_open_write(fname: string): file_handle;
-declare function file_text_open_append(fname: string): file_handle;
-declare function file_text_close(file: file_handle): void;
-declare function file_text_write_string(file: file_handle, str: string): void;
-declare function file_text_write_real(file: file_handle, val: number): void;
-declare function file_text_writeln(file: file_handle): void;
-declare function file_text_read_string(file: file_handle): string;
-declare function file_text_read_real(file: file_handle): number;
-declare function file_text_readln(file: file_handle): string;
-declare function file_text_eof(file: file_handle): bool;
-declare function file_text_eoln(file: file_handle): bool;
-declare function file_exists(fname: string): bool;
-declare function file_delete(fname: string): bool;
-declare function file_rename(oldname: string, newname: string): bool;
-declare function file_copy(fname: string, newname: string): bool;
-declare function directory_exists(dname: string): bool;
+declare function asset_get_type(name: string): AssetType;
+declare function file_text_open_from_string(content: string): FileHandle;
+declare function file_text_open_read(fname: string): FileHandle;
+declare function file_text_open_write(fname: string): FileHandle;
+declare function file_text_open_append(fname: string): FileHandle;
+declare function file_text_close(file: FileHandle): void;
+declare function file_text_write_string(file: FileHandle, str: string): void;
+declare function file_text_write_real(file: FileHandle, val: number): void;
+declare function file_text_writeln(file: FileHandle): void;
+declare function file_text_read_string(file: FileHandle): string;
+declare function file_text_read_real(file: FileHandle): number;
+declare function file_text_readln(file: FileHandle): string;
+declare function file_text_eof(file: FileHandle): boolean;
+declare function file_text_eoln(file: FileHandle): boolean;
+declare function file_exists(fname: string): boolean;
+declare function file_delete(fname: string): boolean;
+declare function file_rename(oldname: string, newname: string): boolean;
+declare function file_copy(fname: string, newname: string): boolean;
+declare function directory_exists(dname: string): boolean;
 declare function directory_create(dname: string): void;
 declare function directory_destroy(dname: string): void;
 declare function file_find_first(
   mask: string,
-  attr: int | file_attribute,
+  attr: Int | FileAttribute
 ): string;
 declare function file_find_next(): string;
 declare function file_find_close(): void;
 declare function file_attributes(
   fname: string,
-  attr: int | file_attribute,
-): bool;
+  attr: Int | FileAttribute
+): boolean;
 declare function filename_name(fname: string): string;
 declare function filename_path(fname: string): string;
 declare function filename_dir(fname: string): string;
 declare function filename_drive(fname: string): string;
 declare function filename_ext(fname: string): string;
 declare function filename_change_ext(fname: string, newext: string): string;
-declare function file_bin_open(fname: string, mode: int): binary_file_handle;
-declare function file_bin_rewrite(file: binary_file_handle): void;
-declare function file_bin_close(file: binary_file_handle): void;
-declare function file_bin_position(file: binary_file_handle): int;
-declare function file_bin_size(file: binary_file_handle): int;
-declare function file_bin_seek(file: binary_file_handle, pos: int): void;
-declare function file_bin_write_byte(file: binary_file_handle, byte: int): void;
-declare function file_bin_read_byte(file: binary_file_handle): int;
-declare function parameter_count(): int;
-declare function parameter_string(n: int): string;
+declare function file_bin_open(fname: string, mode: Int): BinaryFileHandle;
+declare function file_bin_rewrite(file: BinaryFileHandle): void;
+declare function file_bin_close(file: BinaryFileHandle): void;
+declare function file_bin_position(file: BinaryFileHandle): Int;
+declare function file_bin_size(file: BinaryFileHandle): Int;
+declare function file_bin_seek(file: BinaryFileHandle, pos: Int): void;
+declare function file_bin_write_byte(file: BinaryFileHandle, byte: Int): void;
+declare function file_bin_read_byte(file: BinaryFileHandle): Int;
+declare function parameter_count(): Int;
+declare function parameter_string(n: Int): string;
 declare function environment_get_variable(name: string): string;
 declare function ini_open_from_string(content: string): void;
 declare function ini_open(fname: string): void;
@@ -3949,747 +4099,764 @@ declare function ini_close(): string;
 declare function ini_read_string(
   section: string,
   key: string,
-  fallback: string,
+  fallback: string
 ): string;
 declare function ini_read_real(
   section: string,
   key: string,
-  fallback: number,
+  fallback: number
 ): number;
 declare function ini_write_string(
   section: string,
   key: string,
-  str: string,
+  str: string
 ): void;
 declare function ini_write_real(
   section: string,
   key: string,
-  value: number,
+  value: number
 ): void;
-declare function ini_key_exists(section: string, key: string): bool;
-declare function ini_section_exists(section: string): bool;
+declare function ini_key_exists(section: string, key: string): boolean;
+declare function ini_section_exists(section: string): boolean;
 declare function ini_key_delete(section: string, key: string): void;
 declare function ini_section_delete(section: string): void;
 declare function ds_set_precision(prec: number): any;
-declare function ds_exists(id: any, type: ds_type): bool;
-declare function ds_stack_create(): ds_stack;
-declare function ds_stack_destroy<T extends any>(id: ds_stack<T>): void;
-declare function ds_stack_clear<T extends any>(id: ds_stack<T>): void;
+declare function ds_exists(id: any, type: DsType): boolean;
+declare function ds_stack_create<T = any>(): DsStack<T>;
+declare function ds_stack_destroy<T extends any>(id: DsStack<T>): void;
+declare function ds_stack_clear<T extends any>(id: DsStack<T>): void;
 declare function ds_stack_copy<T extends any>(
-  id: ds_stack<T>,
-  source: ds_stack<T>,
+  id: DsStack<T>,
+  source: DsStack<T>
 ): void;
-declare function ds_stack_size<T extends any>(id: ds_stack<T>): int;
-declare function ds_stack_empty<T extends any>(id: ds_stack<T>): bool;
+declare function ds_stack_size<T extends any>(id: DsStack<T>): Int;
+declare function ds_stack_empty<T extends any>(id: DsStack<T>): boolean;
 declare function ds_stack_push<T extends any>(
-  id: ds_stack<T>,
+  id: DsStack<T>,
   ...values: T[]
 ): void;
-declare function ds_stack_pop<T extends any>(id: ds_stack<T>): T;
-declare function ds_stack_top<T extends any>(id: ds_stack<T>): T;
-declare function ds_stack_write<T extends any>(id: ds_stack<T>): string;
+declare function ds_stack_pop<T extends any>(id: DsStack<T>): T;
+declare function ds_stack_top<T extends any>(id: DsStack<T>): T;
+declare function ds_stack_write<T extends any>(id: DsStack<T>): string;
 declare function ds_stack_read<T extends any>(
-  id: ds_stack<T>,
+  id: DsStack<T>,
   str: any,
-  legacy?: boolean,
+  legacy?: boolean
 ): void;
-declare function ds_queue_create(): ds_queue;
-declare function ds_queue_destroy<T extends any>(id: ds_queue<T>): void;
-declare function ds_queue_clear<T extends any>(id: ds_queue<T>): void;
+declare function ds_queue_create<T = any>(): DsQueue<T>;
+declare function ds_queue_destroy<T extends any>(id: DsQueue<T>): void;
+declare function ds_queue_clear<T extends any>(id: DsQueue<T>): void;
 declare function ds_queue_copy<T extends any>(
-  id: ds_queue<T>,
-  source: ds_queue<T>,
+  id: DsQueue<T>,
+  source: DsQueue<T>
 ): void;
-declare function ds_queue_size<T extends any>(id: ds_queue<T>): int;
-declare function ds_queue_empty<T extends any>(id: ds_queue<T>): bool;
+declare function ds_queue_size<T extends any>(id: DsQueue<T>): Int;
+declare function ds_queue_empty<T extends any>(id: DsQueue<T>): boolean;
 declare function ds_queue_enqueue<T extends any>(
-  id: ds_queue<T>,
+  id: DsQueue<T>,
   ...values: T[]
 ): void;
-declare function ds_queue_dequeue<T extends any>(id: ds_queue<T>): T;
-declare function ds_queue_head<T extends any>(id: ds_queue<T>): T;
-declare function ds_queue_tail<T extends any>(id: ds_queue<T>): T;
-declare function ds_queue_write<T extends any>(id: ds_queue<T>): string;
+declare function ds_queue_dequeue<T extends any>(id: DsQueue<T>): T;
+declare function ds_queue_head<T extends any>(id: DsQueue<T>): T;
+declare function ds_queue_tail<T extends any>(id: DsQueue<T>): T;
+declare function ds_queue_write<T extends any>(id: DsQueue<T>): string;
 declare function ds_queue_read<T extends any>(
-  id: ds_queue<T>,
+  id: DsQueue<T>,
   str: string,
-  legacy?: boolean,
+  legacy?: boolean
 ): void;
-declare function ds_list_create(): ds_list;
-declare function ds_list_destroy<T extends any>(list: ds_list<T>): any;
-declare function ds_list_clear<T extends any>(list: ds_list<T>): any;
+declare function ds_list_create<T = any>(): DsList<T>;
+declare function ds_list_destroy<T extends any>(list: DsList<T>): any;
+declare function ds_list_clear<T extends any>(list: DsList<T>): any;
 declare function ds_list_copy<T extends any>(
-  list: ds_list<T>,
-  source: ds_list<T>,
+  list: DsList<T>,
+  source: DsList<T>
 ): any;
-declare function ds_list_size<T extends any>(list: ds_list<T>): int;
-declare function ds_list_empty<T extends any>(list: ds_list<T>): bool;
+declare function ds_list_size<T extends any>(list: DsList<T>): Int;
+declare function ds_list_empty<T extends any>(list: DsList<T>): boolean;
 declare function ds_list_add<T extends any>(
-  list: ds_list<T>,
+  list: DsList<T>,
   ...values: T[]
 ): any;
 declare function ds_list_insert<T extends any>(
-  list: ds_list<T>,
-  pos: int,
-  value: T,
+  list: DsList<T>,
+  pos: Int,
+  value: T
 ): any;
 declare function ds_list_replace<T extends any>(
-  list: ds_list<T>,
-  pos: int,
-  value: T,
+  list: DsList<T>,
+  pos: Int,
+  value: T
 ): any;
-declare function ds_list_delete<T extends any>(list: ds_list<T>, pos: int): any;
+declare function ds_list_delete<T extends any>(list: DsList<T>, pos: Int): any;
 declare function ds_list_find_index<T extends any>(
-  list: ds_list<T>,
-  value: T,
-): int;
+  list: DsList<T>,
+  value: T
+): Int;
 declare function ds_list_find_value<T extends any>(
-  list: ds_list<T>,
-  pos: int,
+  list: DsList<T>,
+  pos: Int
 ): T;
 declare function ds_list_mark_as_list<T extends any>(
-  list: ds_list<T>,
-  pos: int,
+  list: DsList<T>,
+  pos: Int
 ): any;
 declare function ds_list_mark_as_map<T extends any>(
-  list: ds_list<T>,
-  pos: int,
+  list: DsList<T>,
+  pos: Int
 ): any;
 declare function ds_list_sort<T extends any>(
-  list: ds_list<T>,
-  ascending: boolean,
+  list: DsList<T>,
+  ascending: boolean
 ): any;
-declare function ds_list_shuffle<T extends any>(list: ds_list<T>): any;
-declare function ds_list_write<T extends any>(list: ds_list<T>): string;
+declare function ds_list_shuffle<T extends any>(list: DsList<T>): any;
+declare function ds_list_write<T extends any>(list: DsList<T>): string;
 declare function ds_list_read<T extends any>(
-  list: ds_list<T>,
+  list: DsList<T>,
   str: string,
-  legacy?: boolean,
+  legacy?: boolean
 ): any;
 declare function ds_list_set<T extends any>(
-  list: ds_list<T>,
-  pos: int,
-  value: T,
+  list: DsList<T>,
+  pos: Int,
+  value: T
 ): any;
-declare function ds_map_create(): ds_map;
-declare function ds_map_destroy<K, V extends any>(map: ds_map<K, V>): any;
-declare function ds_map_clear<K, V extends any>(map: ds_map<K, V>): any;
-declare function ds_map_copy<K, V extends any>(
-  map: ds_map<K, V>,
-  source: ds_map<K, V>,
+declare function ds_map_create<K extends string = string, V = any>(): DsMap<
+  K,
+  V
+>;
+declare function ds_map_destroy<K extends string = string, V = any>(
+  map: DsMap<K, V>
 ): any;
-declare function ds_map_size<K, V extends any>(map: ds_map<K, V>): int;
-declare function ds_map_empty<K, V extends any>(map: ds_map<K, V>): bool;
-declare function ds_map_add<K, V extends any>(
-  map: ds_map<K, V>,
-  key: K,
-  value: V,
-): bool;
-declare function ds_map_add_list<K, V extends any>(
-  map: ds_map<K, V>,
-  key: K,
-  value: V,
+declare function ds_map_clear<K extends string = string, V = any>(
+  map: DsMap<K, V>
 ): any;
-declare function ds_map_add_map<K, V extends any>(
-  map: ds_map<K, V>,
-  key: K,
-  value: V,
+declare function ds_map_copy<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  source: DsMap<K, V>
 ): any;
-declare function ds_map_replace<K, V extends any>(
-  map: ds_map<K, V>,
+declare function ds_map_size<K extends string = string, V = any>(
+  map: DsMap<K, V>
+): Int;
+declare function ds_map_empty<K extends string = string, V = any>(
+  map: DsMap<K, V>
+): boolean;
+declare function ds_map_add<K extends string = string, V = any>(
+  map: DsMap<K, V>,
   key: K,
-  value: V,
-): bool;
-declare function ds_map_replace_map<K, V extends any>(
-  map: ds_map<K, V>,
+  value: V
+): boolean;
+declare function ds_map_add_list<K extends string = string, V = any>(
+  map: DsMap<K, V>,
   key: K,
-  value: V,
+  value: V
 ): any;
-declare function ds_map_replace_list<K, V extends any>(
-  map: ds_map<K, V>,
+declare function ds_map_add_map<K extends string = string, V = any>(
+  map: DsMap<K, V>,
   key: K,
-  value: V,
+  value: V
 ): any;
-declare function ds_map_delete<K, V extends any>(
-  map: ds_map<K, V>,
+declare function ds_map_replace<K extends string = string, V = any>(
+  map: DsMap<K, V>,
   key: K,
+  value: V
+): boolean;
+declare function ds_map_replace_map<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  key: K,
+  value: V
 ): any;
-declare function ds_map_exists<K, V extends any>(
-  map: ds_map<K, V>,
+declare function ds_map_replace_list<K extends string = string, V = any>(
+  map: DsMap<K, V>,
   key: K,
-): bool;
-declare function ds_map_find_value<K, V extends any>(
-  map: ds_map<K, V>,
-  key: any,
+  value: V
+): any;
+declare function ds_map_delete<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  key: K
+): any;
+declare function ds_map_exists<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  key: K
+): boolean;
+declare function ds_map_find_value<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  key: any
 ): V;
-declare function ds_map_find_previous<K, V extends any>(
-  map: ds_map<K, V>,
-  key: K,
+declare function ds_map_find_previous<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  key: K
 ): K;
-declare function ds_map_find_next<K, V extends any>(
-  map: ds_map<K, V>,
-  key: K,
+declare function ds_map_find_next<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  key: K
 ): K;
-declare function ds_map_find_first<K, V extends any>(map: ds_map<K, V>): K;
-declare function ds_map_find_last<K, V extends any>(map: ds_map<K, V>): K;
-declare function ds_map_write<K, V extends any>(map: ds_map<K, V>): string;
-declare function ds_map_read<K, V extends any>(
-  map: ds_map<K, V>,
+declare function ds_map_find_first<K extends string = string, V = any>(
+  map: DsMap<K, V>
+): K;
+declare function ds_map_find_last<K extends string = string, V = any>(
+  map: DsMap<K, V>
+): K;
+declare function ds_map_write<K extends string = string, V = any>(
+  map: DsMap<K, V>
+): string;
+declare function ds_map_read<K extends string = string, V = any>(
+  map: DsMap<K, V>,
   str: string,
-  legacy?: boolean,
+  legacy?: boolean
 ): any;
-declare function ds_map_set<K, V extends any>(
-  map: ds_map<K, V>,
+declare function ds_map_set<K extends string = string, V = any>(
+  map: DsMap<K, V>,
   key: K,
-  value: V,
+  value: V
 ): any;
-declare function ds_map_secure_save<K, V extends any>(
-  map: ds_map<K, V>,
-  filename: string,
+declare function ds_map_secure_save<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  filename: string
 ): any;
-declare function ds_map_secure_load<K, V extends any>(
-  filename: string,
-): ds_map<K, V>;
-declare function ds_map_secure_load_buffer<K, V extends any>(
-  buffer: buffer,
-): ds_map<K, V>;
-declare function ds_map_secure_save_buffer<K, V extends any>(
-  map: ds_map<K, V>,
-  buffer: buffer,
-): ds_map<K, V>;
-declare function ds_priority_create(): ds_priority;
-declare function ds_priority_destroy<T extends any>(id: ds_priority<T>): void;
-declare function ds_priority_clear<T extends any>(id: ds_priority<T>): void;
+declare function ds_map_secure_load<K extends string = string, V = any>(
+  filename: string
+): DsMap<K, V>;
+declare function ds_map_secure_load_buffer<K extends string = string, V = any>(
+  buffer: Buffer
+): DsMap<K, V>;
+declare function ds_map_secure_save_buffer<K extends string = string, V = any>(
+  map: DsMap<K, V>,
+  buffer: Buffer
+): DsMap<K, V>;
+declare function ds_priority_create<T = any>(): DsPriority<T>;
+declare function ds_priority_destroy<T extends any>(id: DsPriority<T>): void;
+declare function ds_priority_clear<T extends any>(id: DsPriority<T>): void;
 declare function ds_priority_copy<T extends any>(
-  id: ds_priority<T>,
-  source: ds_priority<T>,
+  id: DsPriority<T>,
+  source: DsPriority<T>
 ): void;
-declare function ds_priority_size<T extends any>(id: ds_priority<T>): int;
-declare function ds_priority_empty<T extends any>(id: ds_priority<T>): bool;
+declare function ds_priority_size<T extends any>(id: DsPriority<T>): Int;
+declare function ds_priority_empty<T extends any>(id: DsPriority<T>): boolean;
 declare function ds_priority_add<T extends any>(
-  id: ds_priority<T>,
+  id: DsPriority<T>,
   value: T,
-  priority: number,
+  priority: number
 ): void;
 declare function ds_priority_change_priority<T extends any>(
-  id: ds_priority<T>,
+  id: DsPriority<T>,
   value: T,
-  priority: number,
+  priority: number
 ): void;
 declare function ds_priority_find_priority<T extends any>(
-  id: ds_priority<T>,
-  value: T,
+  id: DsPriority<T>,
+  value: T
 ): number;
 declare function ds_priority_delete_value<T extends any>(
-  id: ds_priority<T>,
-  value: T,
+  id: DsPriority<T>,
+  value: T
 ): void;
-declare function ds_priority_delete_min<T extends any>(id: ds_priority<T>): T;
-declare function ds_priority_find_min<T extends any>(id: ds_priority<T>): T;
-declare function ds_priority_delete_max<T extends any>(id: ds_priority<T>): T;
-declare function ds_priority_find_max<T extends any>(id: ds_priority<T>): T;
-declare function ds_priority_write<T extends any>(id: ds_priority<T>): string;
+declare function ds_priority_delete_min<T extends any>(id: DsPriority<T>): T;
+declare function ds_priority_find_min<T extends any>(id: DsPriority<T>): T;
+declare function ds_priority_delete_max<T extends any>(id: DsPriority<T>): T;
+declare function ds_priority_find_max<T extends any>(id: DsPriority<T>): T;
+declare function ds_priority_write<T extends any>(id: DsPriority<T>): string;
 declare function ds_priority_read<T extends any>(
-  id: ds_priority<T>,
+  id: DsPriority<T>,
   str: string,
-  legacy?: boolean,
+  legacy?: boolean
 ): void;
-declare function ds_grid_create(w: int, h: int): ds_grid;
-declare function ds_grid_destroy<T extends any>(grid: ds_grid<T>): any;
+declare function ds_grid_create(w: Int, h: Int): DsGrid;
+declare function ds_grid_destroy<T extends any>(grid: DsGrid<T>): any;
 declare function ds_grid_copy<T extends any>(
-  grid: ds_grid<T>,
-  source: ds_grid<T>,
+  grid: DsGrid<T>,
+  source: DsGrid<T>
 ): any;
 declare function ds_grid_resize<T extends any>(
-  grid: ds_grid<T>,
-  w: int,
-  h: int,
+  grid: DsGrid<T>,
+  w: Int,
+  h: Int
 ): any;
-declare function ds_grid_width<T extends any>(grid: ds_grid<T>): int;
-declare function ds_grid_height<T extends any>(grid: ds_grid<T>): int;
-declare function ds_grid_clear<T extends any>(grid: ds_grid<T>, val: T): any;
+declare function ds_grid_width<T extends any>(grid: DsGrid<T>): Int;
+declare function ds_grid_height<T extends any>(grid: DsGrid<T>): Int;
+declare function ds_grid_clear<T extends any>(grid: DsGrid<T>, val: T): any;
 declare function ds_grid_add<T extends any>(
-  grid: ds_grid<T>,
-  x: int,
-  y: int,
-  val: T,
+  grid: DsGrid<T>,
+  x: Int,
+  y: Int,
+  val: T
 ): any;
 declare function ds_grid_multiply<T extends any>(
-  grid: ds_grid<T>,
-  x: int,
-  y: int,
-  val: T,
+  grid: DsGrid<T>,
+  x: Int,
+  y: Int,
+  val: T
 ): any;
 declare function ds_grid_set_region<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
-  val: T,
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
+  val: T
 ): any;
 declare function ds_grid_add_region<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
-  val: T,
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
+  val: T
 ): any;
 declare function ds_grid_multiply_region<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
-  val: T,
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
+  val: T
 ): any;
 declare function ds_grid_set_disk<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
   r: number,
-  val: T,
+  val: T
 ): any;
 declare function ds_grid_add_disk<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
   r: number,
-  val: T,
+  val: T
 ): any;
 declare function ds_grid_multiply_disk<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
   r: number,
-  val: T,
+  val: T
 ): any;
 declare function ds_grid_set_grid_region<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   source: any,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
   xpos: any,
-  ypos: any,
+  ypos: any
 ): any;
 declare function ds_grid_add_grid_region<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   source: any,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
   xpos: any,
-  ypos: any,
+  ypos: any
 ): any;
 declare function ds_grid_multiply_grid_region<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   source: any,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
   xpos: any,
-  ypos: any,
+  ypos: any
 ): any;
 declare function ds_grid_get_sum<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int
 ): T;
 declare function ds_grid_get_max<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int
 ): T;
 declare function ds_grid_get_min<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int
 ): T;
 declare function ds_grid_get_mean<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int
 ): T;
 declare function ds_grid_get_disk_sum<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
-  r: number,
+  r: number
 ): T;
 declare function ds_grid_get_disk_min<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
-  r: number,
+  r: number
 ): T;
 declare function ds_grid_get_disk_max<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
-  r: number,
+  r: number
 ): T;
 declare function ds_grid_get_disk_mean<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
-  r: number,
+  r: number
 ): T;
 declare function ds_grid_value_exists<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
-  val: T,
-): bool;
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
+  val: T
+): boolean;
 declare function ds_grid_value_x<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
-  val: T,
-): int;
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
+  val: T
+): Int;
 declare function ds_grid_value_y<T extends any>(
-  grid: ds_grid<T>,
-  x1: int,
-  y1: int,
-  x2: int,
-  y2: int,
-  val: T,
-): int;
+  grid: DsGrid<T>,
+  x1: Int,
+  y1: Int,
+  x2: Int,
+  y2: Int,
+  val: T
+): Int;
 declare function ds_grid_value_disk_exists<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
   r: number,
-  val: T,
-): bool;
+  val: T
+): boolean;
 declare function ds_grid_value_disk_x<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
   r: number,
-  val: T,
-): int;
+  val: T
+): Int;
 declare function ds_grid_value_disk_y<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   xm: number,
   ym: number,
   r: number,
-  val: T,
-): int;
-declare function ds_grid_shuffle<T extends any>(grid: ds_grid<T>): any;
-declare function ds_grid_write<T extends any>(grid: ds_grid<T>): string;
+  val: T
+): Int;
+declare function ds_grid_shuffle<T extends any>(grid: DsGrid<T>): any;
+declare function ds_grid_write<T extends any>(grid: DsGrid<T>): string;
 declare function ds_grid_read<T extends any>(
-  grid: ds_grid<T>,
+  grid: DsGrid<T>,
   str: string,
-  legacy?: boolean,
+  legacy?: boolean
 ): any;
 declare function ds_grid_sort<T extends any>(
-  grid: ds_grid<T>,
-  column: int,
-  ascending: boolean,
+  grid: DsGrid<T>,
+  column: Int,
+  ascending: boolean
 ): any;
 declare function ds_grid_set<T extends any>(
-  grid: ds_grid<T>,
-  x: int,
-  y: int,
-  value: T,
+  grid: DsGrid<T>,
+  x: Int,
+  y: Int,
+  value: T
 ): any;
 declare function ds_grid_get<T extends any>(
-  grid: ds_grid<T>,
-  x: int,
-  y: any,
+  grid: DsGrid<T>,
+  x: Int,
+  y: any
 ): any;
 declare function effect_create_below(
-  kind: effect_kind,
+  kind: EffectKind,
   x: number,
   y: number,
-  size: int,
-  col: int,
+  size: Int,
+  col: Int
 ): void;
 declare function effect_create_above(
-  kind: effect_kind,
+  kind: EffectKind,
   x: number,
   y: number,
-  size: int,
-  col: int,
+  size: Int,
+  col: Int
 ): void;
 declare function effect_clear(): any;
-declare function part_type_create(): particle;
-declare function part_type_destroy(ind: particle): void;
-declare function part_type_exists(ind: particle): bool;
-declare function part_type_clear(ind: particle): void;
-declare function part_type_shape(ind: particle, shape: particle_shape): void;
+declare function part_type_create(): Particle;
+declare function part_type_destroy(ind: Particle): void;
+declare function part_type_exists(ind: Particle): boolean;
+declare function part_type_clear(ind: Particle): void;
+declare function part_type_shape(ind: Particle, shape: ParticleShape): void;
 declare function part_type_sprite(
-  ind: particle,
-  sprite: sprites,
+  ind: Particle,
+  Sprite: Sprite,
   animat: boolean,
   stretch: boolean,
-  random: boolean,
+  random: boolean
 ): void;
 declare function part_type_size(
-  ind: particle,
+  ind: Particle,
   size_min: number,
   size_max: number,
   size_incr: number,
-  size_wiggle: number,
+  size_wiggle: number
 ): void;
 declare function part_type_scale(
-  ind: particle,
+  ind: Particle,
   xscale: number,
-  yscale: number,
+  yscale: number
 ): void;
 declare function part_type_orientation(
-  ind: particle,
+  ind: Particle,
   ang_min: number,
   ang_max: number,
   ang_incr: number,
   ang_wiggle: number,
-  ang_relative: boolean,
+  ang_relative: boolean
 ): void;
 declare function part_type_life(
-  ind: particle,
+  ind: Particle,
   life_min: number,
-  life_max: number,
+  life_max: number
 ): void;
 declare function part_type_step(
-  ind: particle,
-  step_number: int,
-  step_type: particle,
+  ind: Particle,
+  step_number: Int,
+  step_type: Particle
 ): void;
 declare function part_type_death(
-  ind: particle,
-  death_number: int,
-  death_type: particle,
+  ind: Particle,
+  death_number: Int,
+  death_type: Particle
 ): void;
 declare function part_type_speed(
-  ind: particle,
+  ind: Particle,
   speed_min: number,
   speed_max: number,
   speed_incr: number,
-  speed_wiggle: number,
+  speed_wiggle: number
 ): void;
 declare function part_type_direction(
-  ind: particle,
+  ind: Particle,
   dir_min: number,
   dir_max: number,
   dir_incr: number,
-  dir_wiggle: number,
+  dir_wiggle: number
 ): void;
 declare function part_type_gravity(
-  ind: particle,
+  ind: Particle,
   grav_amount: number,
-  grav_dir: number,
+  grav_dir: number
 ): void;
-declare function part_type_colour1(ind: particle, colour1: int): void;
+declare function part_type_colour1(ind: Particle, colour1: Int): void;
 declare function part_type_colour2(
-  ind: particle,
-  colour1: int,
-  colour2: int,
+  ind: Particle,
+  colour1: Int,
+  colour2: Int
 ): void;
 declare function part_type_colour3(
-  ind: particle,
-  colour1: int,
-  colour2: int,
-  colour3: int,
+  ind: Particle,
+  colour1: Int,
+  colour2: Int,
+  colour3: Int
 ): void;
 declare function part_type_colour_mix(
-  ind: particle,
-  colour1: int,
-  colour2: int,
+  ind: Particle,
+  colour1: Int,
+  colour2: Int
 ): void;
 declare function part_type_colour_rgb(
-  ind: particle,
-  rmin: int,
-  rmax: int,
-  gmin: int,
-  gmax: int,
-  bmin: int,
-  bmax: int,
+  ind: Particle,
+  rmin: Int,
+  rmax: Int,
+  gmin: Int,
+  gmax: Int,
+  bmin: Int,
+  bmax: Int
 ): void;
 declare function part_type_colour_hsv(
-  ind: particle,
+  ind: Particle,
   hmin: number,
   hmax: number,
   smin: number,
   smax: number,
   vmin: number,
-  vmax: number,
+  vmax: number
 ): void;
-declare function part_type_color1(ind: particle, color1: int): void;
+declare function part_type_color1(ind: Particle, color1: Int): void;
 declare function part_type_color2(
-  ind: particle,
-  color1: int,
-  color2: int,
+  ind: Particle,
+  color1: Int,
+  color2: Int
 ): void;
 declare function part_type_color3(
-  ind: particle,
-  color1: int,
-  color2: int,
-  color3: int,
+  ind: Particle,
+  color1: Int,
+  color2: Int,
+  color3: Int
 ): void;
 declare function part_type_color_mix(
-  ind: particle,
-  color1: int,
-  color2: int,
+  ind: Particle,
+  color1: Int,
+  color2: Int
 ): void;
 declare function part_type_color_rgb(
-  ind: particle,
-  rmin: int,
-  rmax: int,
-  gmin: int,
-  gmax: int,
-  bmin: int,
-  bmax: int,
+  ind: Particle,
+  rmin: Int,
+  rmax: Int,
+  gmin: Int,
+  gmax: Int,
+  bmin: Int,
+  bmax: Int
 ): void;
 declare function part_type_color_hsv(
-  ind: particle,
+  ind: Particle,
   hmin: number,
   hmax: number,
   smin: number,
   smax: number,
   vmin: number,
-  vmax: number,
+  vmax: number
 ): void;
-declare function part_type_alpha1(ind: particle, alpha1: number): void;
+declare function part_type_alpha1(ind: Particle, alpha1: number): void;
 declare function part_type_alpha2(
-  ind: particle,
+  ind: Particle,
   alpha1: number,
-  alpha2: number,
+  alpha2: number
 ): void;
 declare function part_type_alpha3(
-  ind: particle,
+  ind: Particle,
   alpha1: number,
   alpha2: number,
-  alpha3: number,
+  alpha3: number
 ): void;
-declare function part_type_blend(ind: particle, additive: boolean): void;
-declare function part_system_create(): particle_system;
+declare function part_type_blend(ind: Particle, additive: boolean): void;
+declare function part_system_create(): ParticleSystem;
 declare function part_system_create_layer(
-  layer: layer | string,
-  persistent: boolean,
-): particle_system;
-declare function part_system_destroy(ind: particle_system): void;
-declare function part_system_exists(ind: particle_system): bool;
-declare function part_system_clear(ind: particle_system): void;
+  Layer: Layer | string,
+  persistent: boolean
+): ParticleSystem;
+declare function part_system_destroy(ind: ParticleSystem): void;
+declare function part_system_exists(ind: ParticleSystem): boolean;
+declare function part_system_clear(ind: ParticleSystem): void;
 declare function part_system_draw_order(
-  ind: particle_system,
-  oldtonew: boolean,
+  ind: ParticleSystem,
+  oldtonew: boolean
 ): void;
-declare function part_system_depth(ind: particle_system, depth: number): void;
+declare function part_system_depth(ind: ParticleSystem, depth: number): void;
 declare function part_system_position(
-  ind: particle_system,
+  ind: ParticleSystem,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function part_system_automatic_update(
-  ind: particle_system,
-  automatic: boolean,
+  ind: ParticleSystem,
+  automatic: boolean
 ): void;
 declare function part_system_automatic_draw(
-  ind: particle_system,
-  draw: boolean,
+  ind: ParticleSystem,
+  draw: boolean
 ): void;
-declare function part_system_update(ind: particle_system): void;
-declare function part_system_drawit(ind: particle_system): void;
-declare function part_system_get_layer(ind: particle_system): layer;
+declare function part_system_update(ind: ParticleSystem): void;
+declare function part_system_drawit(ind: ParticleSystem): void;
+declare function part_system_get_layer(ind: ParticleSystem): Layer;
 declare function part_system_layer(
-  ind: particle_system,
-  layer: layer | string,
+  ind: ParticleSystem,
+  Layer: Layer | string
 ): void;
 declare function part_particles_create(
-  ind: particle_system,
+  ind: ParticleSystem,
   x: number,
   y: number,
-  parttype: particle,
-  number: int,
+  parttype: Particle,
+  number: Int
 ): void;
 declare function part_particles_create_colour(
-  ind: particle_system,
+  ind: ParticleSystem,
   x: number,
   y: number,
-  parttype: particle,
-  colour: int,
-  number: int,
+  parttype: Particle,
+  colour: Int,
+  number: Int
 ): void;
 declare function part_particles_create_color(
-  ind: particle_system,
+  ind: ParticleSystem,
   x: number,
   y: number,
-  parttype: particle,
-  color: int,
-  number: int,
+  parttype: Particle,
+  color: Int,
+  number: Int
 ): void;
-declare function part_particles_clear(ind: particle_system): void;
-declare function part_particles_count(ind: particle_system): int;
-declare function part_emitter_create(ps: particle_system): particle_emitter;
+declare function part_particles_clear(ind: ParticleSystem): void;
+declare function part_particles_count(ind: ParticleSystem): Int;
+declare function part_emitter_create(ps: ParticleSystem): ParticleEmitter;
 declare function part_emitter_destroy(
-  ps: particle_system,
-  emitter: particle_emitter,
+  ps: ParticleSystem,
+  emitter: ParticleEmitter
 ): void;
-declare function part_emitter_destroy_all(ps: particle_system): void;
+declare function part_emitter_destroy_all(ps: ParticleSystem): void;
 declare function part_emitter_exists(
-  ps: particle_system,
-  ind: particle_emitter,
-): bool;
+  ps: ParticleSystem,
+  ind: ParticleEmitter
+): boolean;
 declare function part_emitter_clear(
-  ps: particle_system,
-  ind: particle_emitter,
+  ps: ParticleSystem,
+  ind: ParticleEmitter
 ): void;
 declare function part_emitter_region(
-  ps: particle_system,
-  ind: particle_emitter,
+  ps: ParticleSystem,
+  ind: ParticleEmitter,
   xmin: number,
   xmax: number,
   ymin: number,
   ymax: number,
-  shape: particle_region_shape,
-  distribution: particle_distribution,
+  shape: ParticleRegionShape,
+  distribution: ParticleDistribution
 ): void;
 declare function part_emitter_burst(
-  ps: particle_system,
-  ind: particle_emitter,
-  parttype: particle,
-  number: int,
+  ps: ParticleSystem,
+  ind: ParticleEmitter,
+  parttype: Particle,
+  number: Int
 ): void;
 declare function part_emitter_stream(
-  ps: particle_system,
-  ind: particle_emitter,
-  parttype: particle,
-  number: int,
+  ps: ParticleSystem,
+  ind: ParticleEmitter,
+  parttype: Particle,
+  number: Int
 ): void;
 declare function external_define(
   dll_path: string,
   func_name: string,
-  calltype: external_call_type,
-  restype: external_value_type,
+  calltype: ExternalCallType,
+  restype: ExternalValueType,
   argnumb: number,
-  ...argtypes: external_value_type[]
-): external_function;
+  ...argtypes: ExternalValueType[]
+): ExternalFunction;
 declare function external_call(
-  func: external_function,
+  func: ExternalFunction,
   ...arguments: undefined[]
 ): any;
 declare function external_free(dllname: string): any;
-declare function window_handle(): pointer;
-declare function window_device(): pointer;
-declare function matrix_get(type: matrix_type): number[];
-declare function matrix_set(type: matrix_type, matrix: number[]): void;
+declare function window_handle(): Pointer;
+declare function window_device(): Pointer;
+declare function matrix_get(type: MatrixType): number[];
+declare function matrix_set(type: MatrixType, matrix: number[]): void;
 declare function matrix_build(
   x: number,
   y: number,
@@ -4699,17 +4866,20 @@ declare function matrix_build(
   zrotation: number,
   xscale: number,
   yscale: number,
-  zscale: number,
+  zscale: number
 ): number[];
-declare function matrix_multiply(matrix: number[], matrix: number[]): number[];
+declare function matrix_multiply(
+  matrix1: number[],
+  matrix2: number[]
+): number[];
 declare function browser_input_capture(enable: boolean): void;
 declare function os_get_config(): string;
-declare function os_get_info(): ds_map<string, any>;
+declare function os_get_info(): DsMap<string, any>;
 declare function os_get_language(): string;
 declare function os_get_region(): string;
 declare function os_check_permission(
-  permission: string,
-): android_permission_state;
+  permission: string
+): AndroidPermissionState;
 declare function os_request_permission(permission: string): void;
 declare function os_lock_orientation(flag: boolean): void;
 declare function display_get_dpi_x(): number;
@@ -4719,13 +4889,13 @@ declare function display_set_gui_maximise(
   xscale?: number,
   yscale?: number,
   xoffset?: number,
-  yoffset?: number,
+  yoffset?: number
 ): void;
 declare function display_set_gui_maximize(
   xscale?: number,
   yscale?: number,
   xoffset?: number,
-  yoffset?: number,
+  yoffset?: number
 ): void;
 declare function device_mouse_dbclick_enable(enable: boolean): void;
 declare function virtual_key_add(
@@ -4733,11 +4903,11 @@ declare function virtual_key_add(
   y: number,
   w: number,
   h: number,
-  keycode: int,
-): virtual_key;
-declare function virtual_key_hide(id: virtual_key): void;
-declare function virtual_key_delete(id: virtual_key): void;
-declare function virtual_key_show(id: virtual_key): void;
+  keycode: Int
+): VirtualKey;
+declare function virtual_key_hide(id: VirtualKey): void;
+declare function virtual_key_delete(id: VirtualKey): void;
+declare function virtual_key_show(id: VirtualKey): void;
 declare function draw_enable_drawevent(enable: boolean): void;
 declare function draw_enable_swf_aa(enable: boolean): void;
 declare function draw_set_swf_aa_level(aa_level: number): void;
@@ -4748,7 +4918,7 @@ declare function shop_leave_rating(
   text_string: string,
   yes_string: string,
   no_string: string,
-  url: string,
+  url: string
 ): void;
 declare function url_get_domain(): string;
 declare function url_open(url: string): void;
@@ -4756,152 +4926,152 @@ declare function url_open_ext(url: string, target: string): void;
 declare function url_open_full(
   url: string,
   target: string,
-  options: string,
+  options: string
 ): void;
-declare function get_timer(): int;
+declare function get_timer(): Int;
 declare function achievement_login(): void;
 declare function achievement_logout(): void;
 declare function achievement_post(
   achievement_name: string,
-  value: number,
+  value: number
 ): void;
 declare function achievement_increment(
   achievement_name: string,
-  value: number,
+  value: number
 ): void;
 declare function achievement_post_score(
   score_name: string,
-  value: number,
+  value: number
 ): void;
-declare function achievement_available(): bool;
-declare function achievement_show_achievements(): bool;
-declare function achievement_show_leaderboards(): bool;
-declare function achievement_load_friends(): bool;
+declare function achievement_available(): boolean;
+declare function achievement_show_achievements(): boolean;
+declare function achievement_show_leaderboards(): boolean;
+declare function achievement_load_friends(): boolean;
 declare function achievement_load_leaderboard(
   ident: string,
-  minindex: int,
-  maxindex: int,
-  filter: achievement_leaderboard_filter,
+  minindex: Int,
+  maxindex: Int,
+  filter: AchievementLeaderboardFilter
 ): void;
 declare function achievement_send_challenge(
   to: string,
   challengeid: string,
   score: number,
-  type: achievement_challenge_type,
-  msg: string,
+  type: AchievementChallengeType,
+  msg: string
 ): void;
 declare function achievement_load_progress(): void;
 declare function achievement_reset(): void;
-declare function achievement_login_status(): bool;
+declare function achievement_login_status(): boolean;
 declare function achievement_get_pic(char: string): void;
 declare function achievement_show_challenge_notifications(
   receive_challenge: boolean,
   local_complete: boolean,
-  remote_complete: boolean,
+  remote_complete: boolean
 ): void;
 declare function achievement_get_challenges(): void;
 declare function achievement_event(stringid: string): void;
-declare function achievement_show(type: achievement_show_type, val: any): void;
+declare function achievement_show(type: AchievementShowType, val: any): void;
 declare function achievement_get_info(userid: string): void;
-declare function cloud_file_save(filename: string, description: string): int;
-declare function cloud_string_save(data: string, description: string): int;
-declare function cloud_synchronise(): int;
+declare function cloud_file_save(filename: string, description: string): Int;
+declare function cloud_string_save(data: string, description: string): Int;
+declare function cloud_synchronise(): Int;
 declare function device_get_tilt_x(): number;
 declare function device_get_tilt_y(): number;
 declare function device_get_tilt_z(): number;
-declare function device_is_keypad_open(): bool;
+declare function device_is_keypad_open(): boolean;
 declare function device_mouse_check_button(
-  device: int,
-  button: mouse_button,
-): bool;
+  device: Int,
+  button: typeof mouse_button
+): boolean;
 declare function device_mouse_check_button_pressed(
-  device: int,
-  button: mouse_button,
-): bool;
+  device: Int,
+  button: typeof mouse_button
+): boolean;
 declare function device_mouse_check_button_released(
-  device: int,
-  button: mouse_button,
-): bool;
-declare function device_mouse_x(device: int): number;
-declare function device_mouse_y(device: int): number;
-declare function device_mouse_raw_x(device: int): number;
-declare function device_mouse_raw_y(device: int): number;
-declare function device_mouse_x_to_gui(device: int): number;
-declare function device_mouse_y_to_gui(device: int): number;
-declare function iap_activate(ds_list: ds_list<ds_map<string, any>>): void;
-declare function iap_status(): iap_system_status;
+  device: Int,
+  button: typeof mouse_button
+): boolean;
+declare function device_mouse_x(device: Int): number;
+declare function device_mouse_y(device: Int): number;
+declare function device_mouse_raw_x(device: Int): number;
+declare function device_mouse_raw_y(device: Int): number;
+declare function device_mouse_x_to_gui(device: Int): number;
+declare function device_mouse_y_to_gui(device: Int): number;
+declare function iap_activate(ds_list: DsList<DsMap<string, any>>): void;
+declare function iap_status(): IapSystemStatus;
 declare function iap_enumerate_products(
-  ds_list: ds_list<ds_map<string, any>>,
+  ds_list: DsList<DsMap<string, any>>
 ): void;
 declare function iap_restore_all(): void;
-declare function iap_acquire(product_id: string, payload: string): int;
+declare function iap_acquire(product_id: string, payload: string): Int;
 declare function iap_consume(product_id: string): void;
 declare function iap_product_details(
   product_id: string,
-  ds_map: ds_map<string, any>,
+  ds_map: DsMap<string, any>
 ): void;
 declare function iap_purchase_details(
   purchase_id: string,
-  ds_map: ds_map<string, any>,
+  ds_map: DsMap<string, any>
 ): void;
-declare function gamepad_is_supported(): bool;
-declare function gamepad_get_device_count(): int;
-declare function gamepad_is_connected(device: int): bool;
-declare function gamepad_get_description(device: int): string;
-declare function gamepad_get_button_threshold(device: int): number;
+declare function gamepad_is_supported(): boolean;
+declare function gamepad_get_device_count(): Int;
+declare function gamepad_is_connected(device: Int): boolean;
+declare function gamepad_get_description(device: Int): string;
+declare function gamepad_get_button_threshold(device: Int): number;
 declare function gamepad_set_button_threshold(
-  device: int,
-  threshold: number,
+  device: Int,
+  threshold: number
 ): void;
-declare function gamepad_get_axis_deadzone(device: int): number;
-declare function gamepad_set_axis_deadzone(device: int, deadzone: number): void;
-declare function gamepad_button_count(device: int): int;
+declare function gamepad_get_axis_deadzone(device: Int): number;
+declare function gamepad_set_axis_deadzone(device: Int, deadzone: number): void;
+declare function gamepad_button_count(device: Int): Int;
 declare function gamepad_button_check(
-  device: int,
-  buttonIndex: gamepad_button,
-): bool;
+  device: Int,
+  buttonIndex: GamepadButton
+): boolean;
 declare function gamepad_button_check_pressed(
-  device: int,
-  buttonIndex: gamepad_button,
-): bool;
+  device: Int,
+  buttonIndex: GamepadButton
+): boolean;
 declare function gamepad_button_check_released(
-  device: int,
-  buttonIndex: gamepad_button,
-): bool;
+  device: Int,
+  buttonIndex: GamepadButton
+): boolean;
 declare function gamepad_button_value(
-  device: int,
-  buttonIndex: gamepad_button,
+  device: Int,
+  buttonIndex: GamepadButton
 ): number;
-declare function gamepad_axis_count(device: int): int;
+declare function gamepad_axis_count(device: Int): Int;
 declare function gamepad_axis_value(
-  device: int,
-  axisIndex: gamepad_button,
+  device: Int,
+  axisIndex: GamepadButton
 ): number;
 declare function gamepad_set_vibration(
-  device: int,
+  device: Int,
   leftMotorSpeed: number,
-  rightMotorSpeed: number,
+  rightMotorSpeed: number
 ): void;
-declare function gamepad_set_colour(index: int, colour: int): void;
-declare function gamepad_set_color(index: int, color: int): void;
-declare function os_is_paused(): bool;
-declare function window_has_focus(): bool;
-declare function code_is_compiled(): bool;
-declare function http_get(url: string): int;
-declare function http_get_file(url: string, dest: string): int;
-declare function http_post_string(url: string, string: string): int;
+declare function gamepad_set_colour(index: Int, colour: Int): void;
+declare function gamepad_set_color(index: Int, color: Int): void;
+declare function os_is_paused(): boolean;
+declare function window_has_focus(): boolean;
+declare function code_is_compiled(): boolean;
+declare function http_get(url: string): Int;
+declare function http_get_file(url: string, dest: string): Int;
+declare function http_post_string(url: string, string: string): Int;
 declare function http_request(
   url: string,
   method: string,
-  header_map: ds_map<string, string>,
-  body: string,
-): int;
+  header_map: DsMap<string, string>,
+  body: string
+): Int;
 declare function http_get_request_crossorigin(): string;
 declare function http_set_request_crossorigin(crossorigin_type: string): void;
-declare function json_encode(ds_map: ds_map<string, any>): string;
-declare function json_decode(string: string): ds_map<string, any>;
-declare function zip_unzip(file: string, destPath: string): int;
-declare function load_csv(filename: string): ds_grid<string>;
+declare function json_encode(ds_map: DsMap<string, any>): string;
+declare function json_decode(string: string): DsMap<string, any>;
+declare function zip_unzip(file: string, destPath: string): Int;
+declare function load_csv(filename: string): DsGrid<string>;
 declare function base64_encode(string: string): string;
 declare function base64_decode(string: string): string;
 declare function md5_string_unicode(string: string): string;
@@ -4910,148 +5080,148 @@ declare function md5_file(fname: string): string;
 declare function sha1_string_unicode(string: string): string;
 declare function sha1_string_utf8(string: string): string;
 declare function sha1_file(fname: string): string;
-declare function os_is_network_connected(attempt_connection?: boolean): bool;
+declare function os_is_network_connected(attempt_connection?: boolean): boolean;
 declare function os_powersave_enable(enable: boolean): void;
 declare function physics_world_create(PixelToMetreScale: number): void;
 declare function physics_world_gravity(gx: number, gy: number): void;
-declare function physics_world_update_speed(speed: int): void;
-declare function physics_world_update_iterations(iterations: int): void;
-declare function physics_world_draw_debug(draw_flags: physics_debug_flag): void;
+declare function physics_world_update_speed(speed: Int): void;
+declare function physics_world_update_iterations(iterations: Int): void;
+declare function physics_world_draw_debug(draw_flags: PhysicsDebugFlag): void;
 declare function physics_pause_enable(pause: boolean): void;
-declare function physics_fixture_create(): physics_fixture;
-declare function physics_fixture_set_kinematic(fixture: physics_fixture): void;
+declare function physics_fixture_create(): PhysicsFixture;
+declare function physics_fixture_set_kinematic(fixture: PhysicsFixture): void;
 declare function physics_fixture_set_density(
-  fixture: physics_fixture,
-  density: number,
+  fixture: PhysicsFixture,
+  density: number
 ): void;
 declare function physics_fixture_set_awake(
-  fixture: physics_fixture,
-  awake: boolean,
+  fixture: PhysicsFixture,
+  awake: boolean
 ): void;
 declare function physics_fixture_set_restitution(
-  fixture: physics_fixture,
-  restitution: number,
+  fixture: PhysicsFixture,
+  restitution: number
 ): void;
 declare function physics_fixture_set_friction(
-  fixture: physics_fixture,
-  friction: number,
+  fixture: PhysicsFixture,
+  friction: number
 ): void;
 declare function physics_fixture_set_collision_group(
-  fixture: physics_fixture,
-  group: int,
+  fixture: PhysicsFixture,
+  group: Int
 ): void;
 declare function physics_fixture_set_sensor(
-  fixture: physics_fixture,
-  is_sensor: boolean,
+  fixture: PhysicsFixture,
+  is_sensor: boolean
 ): void;
 declare function physics_fixture_set_linear_damping(
-  fixture: physics_fixture,
-  damping: number,
+  fixture: PhysicsFixture,
+  damping: number
 ): void;
 declare function physics_fixture_set_angular_damping(
-  fixture: physics_fixture,
-  damping: number,
+  fixture: PhysicsFixture,
+  damping: number
 ): void;
 declare function physics_fixture_set_circle_shape(
-  fixture: physics_fixture,
-  circleRadius: number,
+  fixture: PhysicsFixture,
+  circleRadius: number
 ): void;
 declare function physics_fixture_set_box_shape(
-  fixture: physics_fixture,
+  fixture: PhysicsFixture,
   halfWidth: number,
-  halfHeight: number,
+  halfHeight: number
 ): void;
 declare function physics_fixture_set_edge_shape(
-  fixture: physics_fixture,
+  fixture: PhysicsFixture,
   x1: number,
   y1: number,
   x2: number,
-  y2: number,
+  y2: number
 ): void;
 declare function physics_fixture_set_polygon_shape(
-  fixture: physics_fixture,
+  fixture: PhysicsFixture
 ): void;
 declare function physics_fixture_set_chain_shape(
-  fixture: physics_fixture,
-  loop: boolean,
+  fixture: PhysicsFixture,
+  loop: boolean
 ): void;
 declare function physics_fixture_add_point(
-  fixture: physics_fixture,
+  fixture: PhysicsFixture,
   local_x: number,
-  local_y: number,
+  local_y: number
 ): void;
-declare function physics_fixture_bind<T extends instance | objects>(
-  fixture: physics_fixture,
-  obj: T,
-): physics_fixture;
-declare function physics_fixture_bind_ext<T extends instance | objects>(
-  fixture: physics_fixture,
+declare function physics_fixture_bind<T extends Instance | Objects>(
+  fixture: PhysicsFixture,
+  obj: T
+): PhysicsFixture;
+declare function physics_fixture_bind_ext<T extends Instance | Objects>(
+  fixture: PhysicsFixture,
   obj: T,
   xo: number,
-  yo: number,
-): physics_fixture;
-declare function physics_fixture_delete(fixture: physics_fixture): void;
+  yo: number
+): PhysicsFixture;
+declare function physics_fixture_delete(fixture: PhysicsFixture): void;
 declare function physics_apply_force(
   xpos: number,
   ypos: number,
   xforce: number,
-  yforce: number,
+  yforce: number
 ): void;
 declare function physics_apply_impulse(
   xpos: number,
   ypos: number,
   ximpulse: number,
-  yimpulse: number,
+  yimpulse: number
 ): void;
 declare function physics_apply_angular_impulse(impulse: number): void;
 declare function physics_apply_local_force(
   xlocal: number,
   ylocal: number,
   xforce_local: number,
-  yforce_local: number,
+  yforce_local: number
 ): void;
 declare function physics_apply_local_impulse(
   xlocal: number,
   ylocal: number,
   ximpulse_local: number,
-  yimpulse_local: number,
+  yimpulse_local: number
 ): void;
 declare function physics_apply_torque(torque: number): void;
 declare function physics_mass_properties(
   mass: number,
   local_centre_of_mass_x: number,
   local_centre_of_mass_y: number,
-  inertia: number,
+  inertia: number
 ): void;
 declare function physics_draw_debug(): void;
-declare function physics_test_overlap<T extends instance | objects>(
+declare function physics_test_overlap<T extends Instance | Objects>(
   x: number,
   y: number,
   angle: number,
-  obj: T,
-): bool;
+  obj: T
+): boolean;
 declare function physics_remove_fixture<T extends any>(
   inst: T,
-  id: physics_fixture,
+  id: PhysicsFixture
 ): void;
 declare function physics_set_friction(
-  fixture: physics_fixture,
-  friction: number,
+  fixture: PhysicsFixture,
+  friction: number
 ): void;
 declare function physics_set_density(
-  fixture: physics_fixture,
-  density: number,
+  fixture: PhysicsFixture,
+  density: number
 ): void;
 declare function physics_set_restitution(
-  fixture: physics_fixture,
-  restitution: number,
+  fixture: PhysicsFixture,
+  restitution: number
 ): void;
-declare function physics_get_friction(fixture: physics_fixture): number;
-declare function physics_get_density(fixture: physics_fixture): number;
-declare function physics_get_restitution(fixture: physics_fixture): number;
+declare function physics_get_friction(fixture: PhysicsFixture): number;
+declare function physics_get_density(fixture: PhysicsFixture): number;
+declare function physics_get_restitution(fixture: PhysicsFixture): number;
 declare function physics_joint_distance_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
@@ -5059,11 +5229,11 @@ declare function physics_joint_distance_create<
   anchor_1_y: number,
   anchor_2_x: number,
   anchor_2_y: number,
-  collideInstances: boolean,
-): physics_joint;
+  collideInstances: boolean
+): PhysicsJoint;
 declare function physics_joint_rope_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
@@ -5072,11 +5242,11 @@ declare function physics_joint_rope_create<
   anchor_2_x: number,
   anchor_2_y: number,
   maxLength: number,
-  collideInstances: boolean,
-): physics_joint;
+  collideInstances: boolean
+): PhysicsJoint;
 declare function physics_joint_revolute_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
@@ -5088,11 +5258,11 @@ declare function physics_joint_revolute_create<
   max_motor_torque: number,
   motor_speed: number,
   enable_motor: boolean,
-  collideInstances: boolean,
-): physics_joint;
+  collideInstances: boolean
+): PhysicsJoint;
 declare function physics_joint_prismatic_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
@@ -5106,11 +5276,11 @@ declare function physics_joint_prismatic_create<
   max_motor_force: number,
   motor_speed: number,
   enable_motor: boolean,
-  collideInstances: boolean,
-): physics_joint;
+  collideInstances: boolean
+): PhysicsJoint;
 declare function physics_joint_pulley_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
@@ -5123,11 +5293,11 @@ declare function physics_joint_pulley_create<
   local_anchor_2_x: number,
   local_anchor_2_y: number,
   ratio: number,
-  collideInstances: boolean,
-): physics_joint;
+  collideInstances: boolean
+): PhysicsJoint;
 declare function physics_joint_wheel_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
@@ -5140,11 +5310,11 @@ declare function physics_joint_wheel_create<
   motor_speed: number,
   freq_hz: number,
   damping_ratio: number,
-  collideInstances: boolean,
-): physics_joint;
+  collideInstances: boolean
+): PhysicsJoint;
 declare function physics_joint_weld_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
@@ -5153,11 +5323,11 @@ declare function physics_joint_weld_create<
   ref_angle: number,
   freq_hz: number,
   damping_ratio: number,
-  collideInstances: boolean,
-): physics_joint;
+  collideInstances: boolean
+): PhysicsJoint;
 declare function physics_joint_friction_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
@@ -5165,655 +5335,648 @@ declare function physics_joint_friction_create<
   anchor_y: number,
   max_force: number,
   max_torque: number,
-  collideInstances: boolean,
-): physics_joint;
+  collideInstances: boolean
+): PhysicsJoint;
 declare function physics_joint_gear_create<
-  T0 extends instance,
-  T1 extends instance,
+  T0 extends Instance,
+  T1 extends Instance
 >(
   inst1: T0,
   inst2: T1,
-  revoluteJoint: physics_joint,
-  prismaticJoint: physics_joint,
-  ratio: number,
-): physics_joint;
+  revoluteJoint: PhysicsJoint,
+  prismaticJoint: PhysicsJoint,
+  ratio: number
+): PhysicsJoint;
 declare function physics_joint_enable_motor(
-  joint: physics_joint,
-  motorState: boolean,
+  joint: PhysicsJoint,
+  motorState: boolean
 ): void;
 declare function physics_joint_get_value(
-  joint: physics_joint,
-  field: physics_joint_value,
-): number | bool;
+  joint: PhysicsJoint,
+  field: PhysicsJointValue
+): number | boolean;
 declare function physics_joint_set_value(
-  joint: physics_joint,
-  field: physics_joint_value,
-  value: number | bool,
-): physics_joint_value;
-declare function physics_joint_delete(joint: physics_joint): void;
+  joint: PhysicsJoint,
+  field: PhysicsJointValue,
+  value: number | boolean
+): PhysicsJointValue;
+declare function physics_joint_delete(joint: PhysicsJoint): void;
 declare function physics_particle_create(
-  typeflags: physics_particle_flag,
+  typeflags: PhysicsParticleFlag,
   x: number,
   y: number,
   xv: number,
   yv: number,
-  col: int,
+  col: Int,
   alpha: number,
-  category: int,
-): physics_particle;
-declare function physics_particle_delete(ind: physics_particle): void;
+  category: Int
+): PhysicsParticle;
+declare function physics_particle_delete(ind: PhysicsParticle): void;
 declare function physics_particle_delete_region_circle(
   x: number,
   y: number,
-  radius: number,
+  radius: number
 ): void;
 declare function physics_particle_delete_region_box(
   x: number,
   y: number,
   halfWidth: number,
-  halfHeight: number,
+  halfHeight: number
 ): void;
 declare function physics_particle_delete_region_poly(
-  pointList: ds_list<number>,
+  pointList: DsList<number>
 ): void;
 declare function physics_particle_set_flags(
-  ind: physics_particle,
-  typeflags: physics_particle_flag,
+  ind: PhysicsParticle,
+  typeflags: PhysicsParticleFlag
 ): void;
 declare function physics_particle_set_category_flags(
-  category: int,
-  typeflags: physics_particle_flag,
+  category: Int,
+  typeflags: PhysicsParticleFlag
 ): void;
 declare function physics_particle_draw(
-  typemask: physics_particle_flag,
-  category: int,
-  sprite: sprites,
-  subimg: int,
+  typemask: PhysicsParticleFlag,
+  category: Int,
+  Sprite: Sprite,
+  subimg: Int
 ): void;
 declare function physics_particle_draw_ext(
-  typemask: physics_particle_flag,
-  category: int,
-  sprite: sprites,
-  subimg: int,
+  typemask: PhysicsParticleFlag,
+  category: Int,
+  Sprite: Sprite,
+  subimg: Int,
   xscale: number,
   yscale: number,
   angle: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
-declare function physics_particle_count(): int;
+declare function physics_particle_count(): Int;
 declare function physics_particle_get_data(
-  buffer: buffer,
-  dataFlags: physics_particle_data_flag,
+  buffer: Buffer,
+  dataFlags: PhysicsParticleDataFlag
 ): void;
 declare function physics_particle_get_data_particle(
-  ind: physics_particle,
-  buffer: buffer,
-  dataFlags: physics_particle_data_flag,
+  ind: PhysicsParticle,
+  buffer: Buffer,
+  dataFlags: PhysicsParticleDataFlag
 ): void;
 declare function physics_particle_group_begin(
-  typeflags: physics_particle_flag,
-  groupflags: physics_particle_group_flag,
+  typeflags: PhysicsParticleFlag,
+  groupflags: PhysicsParticleGroupFlag,
   x: number,
   y: number,
   ang: number,
   xv: number,
   yv: number,
   angVelocity: number,
-  col: int,
+  col: Int,
   alpha: number,
   strength: number,
-  category: int,
+  category: Int
 ): void;
 declare function physics_particle_group_circle(radius: number): void;
 declare function physics_particle_group_box(
   halfWidth: number,
-  halfHeight: number,
+  halfHeight: number
 ): void;
 declare function physics_particle_group_polygon(): void;
 declare function physics_particle_group_add_point(x: number, y: number): void;
-declare function physics_particle_group_end(): physics_particle_group;
+declare function physics_particle_group_end(): PhysicsParticleGroup;
 declare function physics_particle_group_join(
-  to: physics_particle_group,
-  from: physics_particle_group,
+  to: PhysicsParticleGroup,
+  from: PhysicsParticleGroup
 ): void;
-declare function physics_particle_group_delete(
-  ind: physics_particle_group,
-): void;
-declare function physics_particle_group_count(
-  group: physics_particle_group,
-): int;
+declare function physics_particle_group_delete(ind: PhysicsParticleGroup): void;
+declare function physics_particle_group_count(group: PhysicsParticleGroup): Int;
 declare function physics_particle_group_get_data(
-  group: physics_particle_group,
-  buffer: buffer,
-  dataFlags: physics_particle_data_flag,
+  group: PhysicsParticleGroup,
+  buffer: Buffer,
+  dataFlags: PhysicsParticleDataFlag
 ): void;
 declare function physics_particle_group_get_mass(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_inertia(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_centre_x(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_centre_y(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_vel_x(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_vel_y(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_ang_vel(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_x(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_y(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_group_get_angle(
-  group: physics_particle_group,
+  group: PhysicsParticleGroup
 ): number;
 declare function physics_particle_set_group_flags(
-  group: physics_particle_group,
-  groupflags: physics_particle_group_flag,
+  group: PhysicsParticleGroup,
+  groupflags: PhysicsParticleGroupFlag
 ): void;
 declare function physics_particle_get_group_flags(
-  group: physics_particle_group,
-): physics_particle_group_flag;
-declare function physics_particle_get_max_count(): int;
+  group: PhysicsParticleGroup
+): PhysicsParticleGroupFlag;
+declare function physics_particle_get_max_count(): Int;
 declare function physics_particle_get_radius(): number;
 declare function physics_particle_get_density(): number;
 declare function physics_particle_get_damping(): number;
 declare function physics_particle_get_gravity_scale(): number;
-declare function physics_particle_set_max_count(count: int): void;
+declare function physics_particle_set_max_count(count: Int): void;
 declare function physics_particle_set_radius(radius: number): void;
 declare function physics_particle_set_density(density: number): void;
 declare function physics_particle_set_damping(damping: number): void;
 declare function physics_particle_set_gravity_scale(scale: number): void;
-declare function network_create_socket(type: network_type): network_socket;
+declare function network_create_socket(type: NetworkType): NetworkSocket;
 declare function network_create_socket_ext(
-  type: network_type,
-  port: int,
-): network_socket;
+  type: NetworkType,
+  port: Int
+): NetworkSocket;
 declare function network_create_server(
-  type: network_type,
-  port: int,
-  maxclients: int,
-): network_server;
+  type: NetworkType,
+  port: Int,
+  maxclients: Int
+): NetworkServer;
 declare function network_create_server_raw(
-  type: network_type,
-  port: int,
-  maxclients: int,
-): network_server;
+  type: NetworkType,
+  port: Int,
+  maxclients: Int
+): NetworkServer;
 declare function network_connect(
-  socket: network_socket,
+  socket: NetworkSocket,
   url: string,
-  port: int,
-): int;
+  port: Int
+): Int;
 declare function network_connect_raw(
-  socket: network_socket,
+  socket: NetworkSocket,
   url: string,
-  port: int,
-): int;
+  port: Int
+): Int;
 declare function network_connect_async(
-  socket: network_socket,
+  socket: NetworkSocket,
   url: string,
-  port: int,
-): int;
+  port: Int
+): Int;
 declare function network_connect_raw_async(
-  socket: network_socket,
+  socket: NetworkSocket,
   url: string,
-  port: int,
-): int;
+  port: Int
+): Int;
 declare function network_send_packet(
-  socket: network_socket,
-  bufferid: buffer,
-  size: int,
-): int;
+  socket: NetworkSocket,
+  bufferid: Buffer,
+  size: Int
+): Int;
 declare function network_send_raw(
-  socket: network_socket,
-  bufferid: buffer,
-  size: int,
-): int;
+  socket: NetworkSocket,
+  bufferid: Buffer,
+  size: Int
+): Int;
 declare function network_send_broadcast(
-  socket: network_socket,
-  port: int,
-  bufferid: buffer,
-  size: int,
-): int;
+  socket: NetworkSocket,
+  port: Int,
+  bufferid: Buffer,
+  size: Int
+): Int;
 declare function network_send_udp(
-  socket: network_socket,
+  socket: NetworkSocket,
   URL: string,
-  port: int,
-  bufferid: buffer,
-  size: int,
-): int;
+  port: Int,
+  bufferid: Buffer,
+  size: Int
+): Int;
 declare function network_send_udp_raw(
-  socket: network_socket,
+  socket: NetworkSocket,
   URL: string,
-  port: int,
-  bufferid: buffer,
-  size: int,
-): int;
+  port: Int,
+  bufferid: Buffer,
+  size: Int
+): Int;
 declare function network_set_timeout(
-  socket: network_socket,
-  read: int,
-  write: int,
+  socket: NetworkSocket,
+  read: Int,
+  write: Int
 ): void;
 declare function network_set_config(
-  parameter: network_config,
-  value: network_socket | int | bool,
+  parameter: NetworkConfig,
+  value: NetworkSocket | Int | boolean
 ): void;
 declare function network_resolve(url: string): string;
-declare function network_destroy(socket: network_socket | network_server): void;
+declare function network_destroy(socket: NetworkSocket | NetworkServer): void;
 declare function buffer_create(
-  size: int,
-  buffer_kind: buffer_kind,
-  alignment: int,
-): buffer;
+  size: Int,
+  BufferKind: BufferKind,
+  alignment: Int
+): Buffer;
 declare function buffer_write(
-  buffer: buffer,
-  type: buffer_type,
-  value: buffer_auto_type,
-): int;
-declare function buffer_read(
-  buffer: buffer,
-  type: buffer_type,
-): buffer_auto_type;
+  buffer: Buffer,
+  type: BufferType,
+  value: BufferAutoType
+): Int;
+declare function buffer_read(buffer: Buffer, type: BufferType): BufferAutoType;
 declare function buffer_seek(
-  buffer: buffer,
-  base: buffer_seek_base,
-  offset: int,
+  buffer: Buffer,
+  base: BufferSeekBase,
+  offset: Int
 ): void;
-declare function buffer_delete(buffer: buffer): void;
-declare function buffer_exists(buffer: buffer): bool;
-declare function buffer_get_type(buffer: buffer): buffer_kind;
-declare function buffer_get_alignment(buffer: buffer): int;
+declare function buffer_delete(buffer: Buffer): void;
+declare function buffer_exists(buffer: Buffer): boolean;
+declare function buffer_get_type(buffer: Buffer): BufferKind;
+declare function buffer_get_alignment(buffer: Buffer): Int;
 declare function buffer_poke(
-  buffer: buffer,
-  offset: int,
-  type: buffer_type,
-  value: buffer_auto_type,
+  buffer: Buffer,
+  offset: Int,
+  type: BufferType,
+  value: BufferAutoType
 ): void;
 declare function buffer_peek(
-  buffer: buffer,
-  offset: int,
-  type: buffer_type,
-): buffer_auto_type;
-declare function buffer_save(buffer: buffer, filename: string): void;
+  buffer: Buffer,
+  offset: Int,
+  type: BufferType
+): BufferAutoType;
+declare function buffer_save(buffer: Buffer, filename: string): void;
 declare function buffer_save_ext(
-  buffer: buffer,
+  buffer: Buffer,
   filename: string,
-  offset: int,
-  size: int,
+  offset: Int,
+  size: Int
 ): void;
-declare function buffer_load(filename: string): buffer;
+declare function buffer_load(filename: string): Buffer;
 declare function buffer_load_ext(
-  buffer: buffer,
+  buffer: Buffer,
   filename: string,
-  offset: int,
+  offset: Int
 ): void;
 declare function buffer_load_partial(
-  buffer: buffer,
+  buffer: Buffer,
   filename: string,
-  src_offset: int,
-  src_len: int,
-  dest_offset: int,
+  src_offset: Int,
+  src_len: Int,
+  dest_offset: Int
 ): void;
 declare function buffer_copy(
-  src_buffer: buffer,
-  src_offset: int,
-  size: int,
-  dest_buffer: buffer,
-  dest_offset: int,
+  src_buffer: Buffer,
+  src_offset: Int,
+  size: Int,
+  dest_buffer: Buffer,
+  dest_offset: Int
 ): void;
 declare function buffer_fill(
-  buffer: buffer,
-  offset: int,
-  type: buffer_type,
-  value: buffer_auto_type,
-  size: int,
+  buffer: Buffer,
+  offset: Int,
+  type: BufferType,
+  value: BufferAutoType,
+  size: Int
 ): void;
-declare function buffer_get_size(buffer: buffer): int;
-declare function buffer_tell(buffer: buffer): int;
-declare function buffer_resize(buffer: buffer, newsize: int): void;
-declare function buffer_md5(buffer: buffer, offset: int, size: int): string;
-declare function buffer_sha1(buffer: buffer, offset: int, size: int): string;
-declare function buffer_crc32(buffer: buffer, offset: int, size: int): int;
+declare function buffer_get_size(buffer: Buffer): Int;
+declare function buffer_tell(buffer: Buffer): Int;
+declare function buffer_resize(buffer: Buffer, newsize: Int): void;
+declare function buffer_md5(buffer: Buffer, offset: Int, size: Int): string;
+declare function buffer_sha1(buffer: Buffer, offset: Int, size: Int): string;
+declare function buffer_crc32(buffer: Buffer, offset: Int, size: Int): Int;
 declare function buffer_base64_encode(
-  buffer: buffer,
-  offset: int,
-  size: int,
+  buffer: Buffer,
+  offset: Int,
+  size: Int
 ): string;
-declare function buffer_base64_decode(string: string): buffer;
+declare function buffer_base64_decode(string: string): Buffer;
 declare function buffer_base64_decode_ext(
-  buffer: buffer,
+  buffer: Buffer,
   string: string,
-  offset: int,
+  offset: Int
 ): void;
-declare function buffer_sizeof(type: buffer_type): int;
-declare function buffer_get_address(buffer: buffer): pointer;
+declare function buffer_sizeof(type: BufferType): Int;
+declare function buffer_get_address(buffer: Buffer): Pointer;
 declare function buffer_create_from_vertex_buffer(
-  vertex_buffer: vertex_buffer,
-  kind: buffer_kind,
-  alignment: int,
-): buffer;
+  VertexBuffer: VertexBuffer,
+  kind: BufferKind,
+  alignment: Int
+): Buffer;
 declare function buffer_create_from_vertex_buffer_ext(
-  vertex_buffer: vertex_buffer,
-  kind: buffer_kind,
-  alignment: int,
-  start_vertex: int,
-  num_vertices: int,
-): buffer;
+  VertexBuffer: VertexBuffer,
+  kind: BufferKind,
+  alignment: Int,
+  start_vertex: Int,
+  num_vertices: Int
+): Buffer;
 declare function buffer_copy_from_vertex_buffer(
-  vertex_buffer: vertex_buffer,
-  start_vertex: int,
-  num_vertices: int,
-  dest_buffer: buffer,
-  dest_offset: int,
+  VertexBuffer: VertexBuffer,
+  start_vertex: Int,
+  num_vertices: Int,
+  dest_buffer: Buffer,
+  dest_offset: Int
 ): void;
 declare function buffer_async_group_begin(groupname: string): void;
 declare function buffer_async_group_option(
   optionname: string,
-  optionvalue: number | bool | string,
+  optionvalue: number | boolean | string
 ): void;
-declare function buffer_async_group_end(): int;
+declare function buffer_async_group_end(): Int;
 declare function buffer_load_async(
-  bufferid: buffer,
+  bufferid: Buffer,
   filename: string,
-  offset: int,
-  size: int,
-): int;
+  offset: Int,
+  size: Int
+): Int;
 declare function buffer_save_async(
-  bufferid: buffer,
+  bufferid: Buffer,
   filename: string,
-  offset: int,
-  size: int,
-): int;
+  offset: Int,
+  size: Int
+): Int;
 declare function buffer_compress(
-  bufferid: buffer,
-  offset: int,
-  size: int,
-): buffer;
-declare function buffer_decompress(bufferId: buffer): buffer;
+  bufferid: Buffer,
+  offset: Int,
+  size: Int
+): Buffer;
+declare function buffer_decompress(bufferId: Buffer): Buffer;
 declare function gml_release_mode(enable: boolean): void;
 declare function gml_pragma(setting: string, ...parameters: string[]): void;
-declare function steam_activate_overlay(overlayIndex: steam_overlay_page): void;
-declare function steam_is_overlay_enabled(): bool;
-declare function steam_is_overlay_activated(): bool;
+declare function steam_activate_overlay(overlayIndex: SteamOverlayPage): void;
+declare function steam_is_overlay_enabled(): boolean;
+declare function steam_is_overlay_activated(): boolean;
 declare function steam_get_persona_name(): string;
-declare function steam_initialised(): bool;
-declare function steam_is_cloud_enabled_for_app(): bool;
-declare function steam_is_cloud_enabled_for_account(): bool;
-declare function steam_file_persisted(filename: string): bool;
-declare function steam_get_quota_total(): int;
-declare function steam_get_quota_free(): int;
+declare function steam_initialised(): boolean;
+declare function steam_is_cloud_enabled_for_app(): boolean;
+declare function steam_is_cloud_enabled_for_account(): boolean;
+declare function steam_file_persisted(filename: string): boolean;
+declare function steam_get_quota_total(): Int;
+declare function steam_get_quota_free(): Int;
 declare function steam_file_write(
   steam_filename: string,
   data: string,
-  size: int,
-): int;
+  size: Int
+): Int;
 declare function steam_file_write_file(
   steam_filename: string,
-  local_filename: string,
-): int;
+  local_filename: string
+): Int;
 declare function steam_file_read(filename: string): string;
-declare function steam_file_delete(filename: string): int;
-declare function steam_file_exists(filename: string): bool;
-declare function steam_file_size(filename: string): int;
-declare function steam_file_share(filename: string): int;
-declare function steam_is_screenshot_requested(): bool;
+declare function steam_file_delete(filename: string): Int;
+declare function steam_file_exists(filename: string): boolean;
+declare function steam_file_size(filename: string): Int;
+declare function steam_file_share(filename: string): Int;
+declare function steam_is_screenshot_requested(): boolean;
 declare function steam_send_screenshot(
   filename: string,
-  width: int,
-  height: int,
-): int;
-declare function steam_is_user_logged_on(): bool;
-declare function steam_get_user_steam_id(): int;
-declare function steam_user_owns_dlc(dlc_id: int): bool;
-declare function steam_user_installed_dlc(dlc_id: int): bool;
+  width: Int,
+  height: Int
+): Int;
+declare function steam_is_user_logged_on(): boolean;
+declare function steam_get_user_steam_id(): Int;
+declare function steam_user_owns_dlc(dlc_id: Int): boolean;
+declare function steam_user_installed_dlc(dlc_id: Int): boolean;
 declare function steam_set_achievement(ach_name: string): void;
-declare function steam_get_achievement(ach_name: string): bool;
+declare function steam_get_achievement(ach_name: string): boolean;
 declare function steam_clear_achievement(ach_name: string): void;
-declare function steam_set_stat_int(stat_name: string, value: int): void;
+declare function steam_set_stat_int(stat_name: string, value: Int): void;
 declare function steam_set_stat_float(stat_name: string, value: number): void;
 declare function steam_set_stat_avg_rate(
   stat_name: string,
   session_count: number,
-  session_length: number,
+  session_length: number
 ): void;
-declare function steam_get_stat_int(stat_name: string): int;
+declare function steam_get_stat_int(stat_name: string): Int;
 declare function steam_get_stat_float(stat_name: string): number;
 declare function steam_get_stat_avg_rate(stat_name: string): number;
 declare function steam_reset_all_stats(): void;
 declare function steam_reset_all_stats_achievements(): void;
-declare function steam_stats_ready(): bool;
+declare function steam_stats_ready(): boolean;
 declare function steam_create_leaderboard(
   lb_name: string,
-  sort_method: steam_leaderboard_sort_type,
-  display_type: steam_leaderboard_display_type,
-): int;
-declare function steam_upload_score(lb_name: string, score: number): int;
+  sort_method: SteamLeaderboardSortType,
+  display_type: SteamLeaderboardDisplayType
+): Int;
+declare function steam_upload_score(lb_name: string, score: number): Int;
 declare function steam_upload_score_ext(
   lb_name: string,
   score: number,
-  forceupdate: boolean,
-): int;
+  forceupdate: boolean
+): Int;
 declare function steam_download_scores_around_user(
   lb_name: string,
-  range_start: int,
-  range_end: int,
-): int;
+  range_start: Int,
+  range_end: Int
+): Int;
 declare function steam_download_scores(
   lb_name: string,
-  start_idx: int,
-  end_idx: int,
-): int;
-declare function steam_download_friends_scores(lb_name: string): int;
+  start_idx: Int,
+  end_idx: Int
+): Int;
+declare function steam_download_friends_scores(lb_name: string): Int;
 declare function steam_upload_score_buffer(
   lb_name: string,
   score: number,
-  buffer_id: buffer,
-): int;
+  buffer_id: Buffer
+): Int;
 declare function steam_upload_score_buffer_ext(
   lb_name: string,
   score: number,
   buffer_id: number,
-  forceupdate: boolean,
-): int;
+  forceupdate: boolean
+): Int;
 declare function steam_current_game_language(): string;
 declare function steam_available_languages(): string;
 declare function steam_activate_overlay_browser(url: string): void;
 declare function steam_activate_overlay_user(
   dialog_name: string,
-  steamid: steam_id,
+  steamid: SteamId
 ): void;
-declare function steam_activate_overlay_store(app_id: int): void;
-declare function steam_get_user_persona_name(steam_id: steam_id): int;
-declare function steam_get_app_id(): int;
-declare function steam_get_user_account_id(): steam_id;
+declare function steam_activate_overlay_store(app_id: Int): void;
+declare function steam_get_user_persona_name(SteamId: SteamId): Int;
+declare function steam_get_app_id(): Int;
+declare function steam_get_user_account_id(): SteamId;
 declare function steam_ugc_download(
-  ugc_handle: steam_ugc,
-  dest_filename: string,
-): int;
+  ugc_handle: SteamUgc,
+  dest_filename: string
+): Int;
 declare function steam_ugc_create_item(
-  consumer_app_id: int,
-  file_type: steam_ugc_type,
-): int;
+  consumer_app_id: Int,
+  file_type: SteamUgcType
+): Int;
 declare function steam_ugc_start_item_update(
-  consumer_app_id: int,
-  published_file_id: steam_ugc,
-): int;
+  consumer_app_id: Int,
+  published_file_id: SteamUgc
+): Int;
 declare function steam_ugc_set_item_title(
-  ugc_update_handle: steam_ugc,
-  title: string,
-): bool;
+  ugc_update_handle: SteamUgc,
+  title: string
+): boolean;
 declare function steam_ugc_set_item_description(
-  ugc_update_handle: steam_ugc,
-  description: string,
-): bool;
+  ugc_update_handle: SteamUgc,
+  description: string
+): boolean;
 declare function steam_ugc_set_item_visibility(
-  ugc_update_handle: steam_ugc,
-  visibility: steam_ugc_visibility,
-): bool;
+  ugc_update_handle: SteamUgc,
+  visibility: SteamUgcVisibility
+): boolean;
 declare function steam_ugc_set_item_tags(
-  ugc_update_handle: steam_ugc,
-  tag_array: string[],
-): bool;
+  ugc_update_handle: SteamUgc,
+  tag_array: string[]
+): boolean;
 declare function steam_ugc_set_item_content(
-  ugc_update_handle: steam_ugc,
-  directory: string,
-): bool;
+  ugc_update_handle: SteamUgc,
+  directory: string
+): boolean;
 declare function steam_ugc_set_item_preview(
-  ugc_update_handle: steam_ugc,
-  image_path: string,
-): bool;
+  ugc_update_handle: SteamUgc,
+  image_path: string
+): boolean;
 declare function steam_ugc_submit_item_update(
-  ugc_update_handle: steam_ugc,
-  change_note: string,
-): int;
+  ugc_update_handle: SteamUgc,
+  change_note: string
+): Int;
 declare function steam_ugc_get_item_update_progress(
-  ugc_update_handle: steam_ugc,
-  info_map: ds_map<string, any>,
-): bool;
-declare function steam_ugc_subscribe_item(published_file_id: steam_ugc): int;
-declare function steam_ugc_unsubscribe_item(published_file_id: steam_ugc): int;
-declare function steam_ugc_num_subscribed_items(): int;
+  ugc_update_handle: SteamUgc,
+  info_map: DsMap<string, any>
+): boolean;
+declare function steam_ugc_subscribe_item(published_file_id: SteamUgc): Int;
+declare function steam_ugc_unsubscribe_item(published_file_id: SteamUgc): Int;
+declare function steam_ugc_num_subscribed_items(): Int;
 declare function steam_ugc_get_subscribed_items(
-  item_list: ds_list<steam_ugc>,
-): bool;
+  item_list: DsList<SteamUgc>
+): boolean;
 declare function steam_ugc_get_item_install_info(
-  published_file_id: steam_ugc,
-  info_map: ds_map<string, any>,
-): bool;
+  published_file_id: SteamUgc,
+  info_map: DsMap<string, any>
+): boolean;
 declare function steam_ugc_get_item_update_info(
-  published_file_id: steam_ugc,
-  info_map: ds_map<string, any>,
-): bool;
+  published_file_id: SteamUgc,
+  info_map: DsMap<string, any>
+): boolean;
 declare function steam_ugc_request_item_details(
-  published_file_id: steam_ugc,
-  max_age_seconds: int,
-): int;
+  published_file_id: SteamUgc,
+  max_age_seconds: Int
+): Int;
 declare function steam_ugc_create_query_user(
-  list_type: steam_ugc_query_list_type,
-  match_type: steam_ugc_query_match_type,
-  sort_order: steam_ugc_query_sort_order,
-  page: int,
-): int;
+  list_type: SteamUgcQueryListType,
+  match_type: SteamUgcQueryMatchType,
+  sort_order: SteamUgcQuerySortOrder,
+  page: Int
+): Int;
 declare function steam_ugc_create_query_user_ex(
-  list_type: steam_ugc_query_list_type,
-  match_type: steam_ugc_query_match_type,
-  sort_order: steam_ugc_query_sort_order,
-  page: int,
-  account_id: steam_id,
-  creator_app_id: steam_id,
-  consumer_app_id: int,
-): int;
+  list_type: SteamUgcQueryListType,
+  match_type: SteamUgcQueryMatchType,
+  sort_order: SteamUgcQuerySortOrder,
+  page: Int,
+  account_id: SteamId,
+  creator_app_id: SteamId,
+  consumer_app_id: Int
+): Int;
 declare function steam_ugc_create_query_all(
-  query_type: steam_ugc_query_type,
-  match_type: steam_ugc_query_match_type,
-  page: int,
-): int;
+  query_type: SteamUgcQueryType,
+  match_type: SteamUgcQueryMatchType,
+  page: Int
+): Int;
 declare function steam_ugc_create_query_all_ex(
-  query_type: steam_ugc_query_type,
-  match_type: steam_ugc_query_match_type,
-  page: int,
-  creator_app_id: steam_id,
-  consumer_app_id: int,
-): int;
+  query_type: SteamUgcQueryType,
+  match_type: SteamUgcQueryMatchType,
+  page: Int,
+  creator_app_id: SteamId,
+  consumer_app_id: Int
+): Int;
 declare function steam_ugc_query_set_cloud_filename_filter(
-  ugc_query_handle: steam_ugc_query,
-  match_cloud_filename: boolean,
-): bool;
+  ugc_query_handle: SteamUgcQuery,
+  match_cloud_filename: boolean
+): boolean;
 declare function steam_ugc_query_set_match_any_tag(
-  ugc_query_handle: steam_ugc_query,
-  match_any_tag: boolean,
-): bool;
+  ugc_query_handle: SteamUgcQuery,
+  match_any_tag: boolean
+): boolean;
 declare function steam_ugc_query_set_search_text(
-  ugc_query_handle: steam_ugc_query,
-  search_text: string,
-): bool;
+  ugc_query_handle: SteamUgcQuery,
+  search_text: string
+): boolean;
 declare function steam_ugc_query_set_ranked_by_trend_days(
-  ugc_query: steam_ugc_query,
-  days: number,
-): bool;
+  ugc_query: SteamUgcQuery,
+  days: number
+): boolean;
 declare function steam_ugc_query_add_required_tag(
-  ugc_query_handle: steam_ugc_query,
-  tag_name: string,
-): bool;
+  ugc_query_handle: SteamUgcQuery,
+  tag_name: string
+): boolean;
 declare function steam_ugc_query_add_excluded_tag(
-  ugc_query_handle: steam_ugc_query,
-  tag_name: string,
-): bool;
+  ugc_query_handle: SteamUgcQuery,
+  tag_name: string
+): boolean;
 declare function steam_ugc_query_set_return_long_description(
-  ugc_query_handle: steam_ugc_query,
-  return_long_desc: boolean,
-): bool;
+  ugc_query_handle: SteamUgcQuery,
+  return_long_desc: boolean
+): boolean;
 declare function steam_ugc_query_set_return_total_only(
-  ugc_query_handle: steam_ugc_query,
-  return_total_only: boolean,
-): bool;
+  ugc_query_handle: SteamUgcQuery,
+  return_total_only: boolean
+): boolean;
 declare function steam_ugc_query_set_allow_cached_response(
-  ugc_query_handle: steam_ugc_query,
-  allow_cached_response: boolean,
-): bool;
-declare function steam_ugc_send_query(ugc_query_handle: steam_ugc_query): int;
-declare function shader_set(shader: shaders): void;
-declare function shader_get_name(shader: shaders): string;
+  ugc_query_handle: SteamUgcQuery,
+  allow_cached_response: boolean
+): boolean;
+declare function steam_ugc_send_query(ugc_query_handle: SteamUgcQuery): Int;
+declare function shader_set(shader: Shaders): void;
+declare function shader_get_name(shader: Shaders): string;
 declare function shader_reset(): void;
-declare function shader_current(): shaders;
-declare function shader_is_compiled(shader: shaders): bool;
+declare function shader_current(): Shaders;
+declare function shader_is_compiled(shader: Shaders): boolean;
 declare function shader_get_sampler_index(
-  shader: shaders,
-  uniform_name: string,
-): shader_sampler;
+  shader: Shaders,
+  uniform_name: string
+): ShaderSampler;
 declare function shader_get_uniform(
-  shader: shaders,
-  uniform_name: string,
-): shader_uniform;
+  shader: Shaders,
+  uniform_name: string
+): ShaderUniform;
 declare function shader_set_uniform_i(
-  uniform_id: shader_uniform,
-  val1: int,
-  val2?: int,
-  val3?: int,
-  val4?: int,
+  uniform_id: ShaderUniform,
+  val1: Int,
+  val2?: Int,
+  val3?: Int,
+  val4?: Int
 ): void;
 declare function shader_set_uniform_i_array(
-  uniform_id: shader_uniform,
-  array: int[],
+  uniform_id: ShaderUniform,
+  array: Int[]
 ): void;
 declare function shader_set_uniform_f(
-  uniform_id: shader_uniform,
+  uniform_id: ShaderUniform,
   val1: number,
   val2?: number,
   val3?: number,
-  val4?: number,
+  val4?: number
 ): void;
 declare function shader_set_uniform_f_array(
-  uniform_id: shader_uniform,
-  array: number[],
+  uniform_id: ShaderUniform,
+  array: number[]
 ): void;
-declare function shader_set_uniform_matrix(uniform_id: shader_uniform): void;
+declare function shader_set_uniform_matrix(uniform_id: ShaderUniform): void;
 declare function shader_set_uniform_matrix_array(
-  uniform_id: shader_uniform,
-  array: int[],
+  uniform_id: ShaderUniform,
+  array: Int[]
 ): void;
 declare function shader_enable_corner_id(enable: boolean): void;
 declare function texture_set_stage(
-  sampled_id: shader_sampler,
-  texture_id: texture,
+  sampled_id: ShaderSampler,
+  texture_id: Texture
 ): void;
-declare function texture_get_texel_width(texture_id: texture): int;
-declare function texture_get_texel_height(texture_id: texture): int;
-declare function shaders_are_supported(): bool;
+declare function texture_get_texel_width(texture_id: Texture): Int;
+declare function texture_get_texel_height(texture_id: Texture): Int;
+declare function shaders_are_supported(): boolean;
 declare function vertex_format_begin(): void;
-declare function vertex_format_end(): vertex_format;
-declare function vertex_format_delete(format_id: vertex_format): void;
+declare function vertex_format_end(): VertexFormat;
+declare function vertex_format_delete(format_id: VertexFormat): void;
 declare function vertex_format_add_position(): void;
 declare function vertex_format_add_position_3d(): void;
 declare function vertex_format_add_colour(): void;
@@ -5821,224 +5984,221 @@ declare function vertex_format_add_color(): void;
 declare function vertex_format_add_normal(): void;
 declare function vertex_format_add_texcoord(): void;
 declare function vertex_format_add_custom(
-  type: vertex_type,
-  usage: vertex_usage,
+  type: VertexType,
+  usage: VertexUsage
 ): void;
-declare function vertex_create_buffer(): vertex_buffer;
-declare function vertex_create_buffer_ext(size: int): vertex_buffer;
-declare function vertex_delete_buffer(vbuff: vertex_buffer): void;
-declare function vertex_begin(
-  vbuff: vertex_buffer,
-  format: vertex_format,
-): void;
-declare function vertex_end(vbuff: vertex_buffer): void;
+declare function vertex_create_buffer(): VertexBuffer;
+declare function vertex_create_buffer_ext(size: Int): VertexBuffer;
+declare function vertex_delete_buffer(vbuff: VertexBuffer): void;
+declare function vertex_begin(vbuff: VertexBuffer, format: VertexFormat): void;
+declare function vertex_end(vbuff: VertexBuffer): void;
 declare function vertex_position(
-  vbuff: vertex_buffer,
+  vbuff: VertexBuffer,
   x: number,
-  y: number,
+  y: number
 ): void;
 declare function vertex_position_3d(
-  vbuff: vertex_buffer,
+  vbuff: VertexBuffer,
   x: number,
   y: number,
-  z: number,
+  z: number
 ): void;
 declare function vertex_colour(
-  vbuff: vertex_buffer,
-  colour: int,
-  alpha: number,
+  vbuff: VertexBuffer,
+  colour: Int,
+  alpha: number
 ): void;
 declare function vertex_color(
-  vbuff: vertex_buffer,
-  color: int,
-  alpha: number,
+  vbuff: VertexBuffer,
+  color: Int,
+  alpha: number
 ): void;
-declare function vertex_argb(vbuff: vertex_buffer, argb: int): void;
+declare function vertex_argb(vbuff: VertexBuffer, argb: Int): void;
 declare function vertex_texcoord(
-  vbuff: vertex_buffer,
+  vbuff: VertexBuffer,
   u: number,
-  v: number,
+  v: number
 ): void;
 declare function vertex_normal(
-  vbuff: vertex_buffer,
+  vbuff: VertexBuffer,
   nx: number,
   ny: number,
-  nz: number,
+  nz: number
 ): void;
-declare function vertex_float1(vbuff: vertex_buffer, f1: number): void;
+declare function vertex_float1(vbuff: VertexBuffer, f1: number): void;
 declare function vertex_float2(
-  vbuff: vertex_buffer,
+  vbuff: VertexBuffer,
   f1: number,
-  f2: number,
+  f2: number
 ): void;
 declare function vertex_float3(
-  vbuff: vertex_buffer,
+  vbuff: VertexBuffer,
   f1: number,
   f2: number,
-  f3: number,
+  f3: number
 ): void;
 declare function vertex_float4(
-  vbuff: vertex_buffer,
+  vbuff: VertexBuffer,
   f1: number,
   f2: number,
   f3: number,
-  f4: number,
+  f4: number
 ): void;
 declare function vertex_ubyte4(
-  vbuff: vertex_buffer,
-  b1: int,
-  b2: int,
-  b3: int,
-  b4: int,
+  vbuff: VertexBuffer,
+  b1: Int,
+  b2: Int,
+  b3: Int,
+  b4: Int
 ): void;
 declare function vertex_submit(
-  vbuff: vertex_buffer,
-  prim: primitive_type,
-  texture: texture,
+  vbuff: VertexBuffer,
+  prim: PrimitiveType,
+  Texture: Texture
 ): void;
-declare function vertex_freeze(vbuff: vertex_buffer): void;
-declare function vertex_get_number(vbuff: vertex_buffer): int;
-declare function vertex_get_buffer_size(vbuff: vertex_buffer): int;
+declare function vertex_freeze(vbuff: VertexBuffer): void;
+declare function vertex_get_number(vbuff: VertexBuffer): Int;
+declare function vertex_get_buffer_size(vbuff: VertexBuffer): Int;
 declare function vertex_create_buffer_from_buffer(
-  src_buffer: buffer,
-  format: vertex_format,
-): vertex_buffer;
+  src_buffer: Buffer,
+  format: VertexFormat
+): VertexBuffer;
 declare function vertex_create_buffer_from_buffer_ext(
-  src_buffer: buffer,
-  format: vertex_format,
-  src_offset: int,
-  num_vertices: int,
-): vertex_buffer;
+  src_buffer: Buffer,
+  format: VertexFormat,
+  src_offset: Int,
+  num_vertices: Int
+): VertexBuffer;
 declare function push_local_notification(
-  fire_time: datetime,
+  fire_time: Datetime,
   title: string,
   message: string,
-  data: string,
+  data: string
 ): void;
 declare function push_get_first_local_notification(
-  ds_map: ds_map<string, string>,
-): int;
+  ds_map: DsMap<string, string>
+): Int;
 declare function push_get_next_local_notification(
-  ds_map: ds_map<string, string>,
-): int;
-declare function push_cancel_local_notification(id: int): void;
-declare function push_get_application_badge_number(): int;
-declare function push_set_application_badge_number(num: int): void;
+  ds_map: DsMap<string, string>
+): Int;
+declare function push_cancel_local_notification(id: Int): void;
+declare function push_get_application_badge_number(): Int;
+declare function push_set_application_badge_number(num: Int): void;
 declare function skeleton_animation_set(anim_name: string): void;
 declare function skeleton_animation_get(): string;
 declare function skeleton_animation_mix(
   anim_from: string,
   anim_to: string,
-  duration: number,
+  duration: number
 ): void;
 declare function skeleton_animation_set_ext(
   anim_name: string,
-  track: int,
+  track: Int
 ): void;
-declare function skeleton_animation_get_ext(track: int): string;
+declare function skeleton_animation_get_ext(track: Int): string;
 declare function skeleton_animation_get_duration(anim_name: string): number;
-declare function skeleton_animation_get_frames(anim_name: string): int;
-declare function skeleton_animation_clear(track: int): void;
+declare function skeleton_animation_get_frames(anim_name: string): Int;
+declare function skeleton_animation_clear(track: Int): void;
 declare function skeleton_skin_set(skin_name: string): void;
 declare function skeleton_skin_get(): string;
 declare function skeleton_attachment_set(
   slot: string,
-  attachment: string | sprites,
+  attachment: string | Sprite
 ): any;
 declare function skeleton_attachment_get(slot: string): string;
 declare function skeleton_attachment_create(
   name: string,
-  sprite: sprites,
-  ind: int,
+  Sprite: Sprite,
+  ind: Int,
   xo: number,
   yo: number,
   xs: number,
   ys: number,
-  rot: number,
-): int;
+  rot: number
+): Int;
 declare function skeleton_attachment_create_colour(
   name: string,
-  sprite: sprites,
-  ind: int,
+  Sprite: Sprite,
+  ind: Int,
   xo: number,
   yo: number,
   xs: number,
   ys: number,
   rot: number,
-  col: int,
-  alpha: number,
-): int;
+  col: Int,
+  alpha: number
+): Int;
 declare function skeleton_attachment_create_color(
   name: string,
-  sprite: sprites,
-  ind: int,
+  Sprite: Sprite,
+  ind: Int,
   xo: number,
   yo: number,
   xs: number,
   ys: number,
   rot: number,
-  col: int,
-  alpha: number,
-): int;
+  col: Int,
+  alpha: number
+): Int;
 declare function skeleton_collision_draw_set(val: boolean): void;
 declare function skeleton_bone_data_get(
   bone: string,
-  map: ds_map<string, any>,
+  map: DsMap<string, any>
 ): void;
 declare function skeleton_bone_data_set(
   bone: string,
-  map: ds_map<string, any>,
+  map: DsMap<string, any>
 ): void;
 declare function skeleton_bone_state_get(
   bone: string,
-  map: ds_map<string, any>,
+  map: DsMap<string, any>
 ): void;
 declare function skeleton_bone_state_set(
   bone: string,
-  map: ds_map<string, any>,
+  map: DsMap<string, any>
 ): void;
 declare function skeleton_slot_colour_set(
   slot: string,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function skeleton_slot_color_set(
   slot: string,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
-declare function skeleton_slot_colour_get(slot: string): int;
-declare function skeleton_slot_color_get(slot: string): int;
+declare function skeleton_slot_colour_get(slot: string): Int;
+declare function skeleton_slot_color_get(slot: string): Int;
 declare function skeleton_slot_alpha_get(slot: string): number;
 declare function skeleton_find_slot(
   x: number,
   y: number,
-  list: ds_list<string>,
+  list: DsList<string>
 ): void;
 declare function skeleton_get_minmax(): number[];
-declare function skeleton_get_num_bounds(): int;
-declare function skeleton_get_bounds(index: int): number[];
-declare function skeleton_animation_get_frame(track: int): int;
-declare function skeleton_animation_set_frame(track: int, index: int): void;
+declare function skeleton_get_num_bounds(): Int;
+declare function skeleton_get_bounds(index: Int): number[];
+declare function skeleton_animation_get_frame(track: Int): Int;
+declare function skeleton_animation_set_frame(track: Int, index: Int): void;
 declare function skeleton_animation_get_event_frames(
   anim_name: string,
-  event_name: string,
-): int[];
+  event_name: string
+): Int[];
 declare function draw_skeleton(
-  sprite: sprites,
+  Sprite: Sprite,
   animname: string,
   skinname: string,
-  frame: int,
+  frame: Int,
   x: number,
   y: number,
   xscale: number,
   yscale: number,
   rot: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_skeleton_time(
-  sprite: sprites,
+  Sprite: Sprite,
   animname: string,
   skinname: string,
   time: number,
@@ -6047,56 +6207,47 @@ declare function draw_skeleton_time(
   xscale: number,
   yscale: number,
   rot: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_skeleton_instance<T extends any>(
   instance: T,
   animname: string,
   skinname: string,
-  frame: int,
+  frame: Int,
   x: number,
   y: number,
   xscale: number,
   yscale: number,
   rot: number,
-  col: int,
-  alpha: number,
+  col: Int,
+  alpha: number
 ): void;
 declare function draw_skeleton_collision(
-  sprite: sprites,
+  Sprite: Sprite,
   animname: string,
-  frame: int,
+  frame: Int,
   x: number,
   y: number,
   xscale: number,
   yscale: number,
   rot: number,
-  col: int,
+  col: Int
 ): void;
 declare function draw_enable_skeleton_blendmodes(enable: boolean): void;
-declare function draw_get_enable_skeleton_blendmodes(): bool;
+declare function draw_get_enable_skeleton_blendmodes(): boolean;
 declare function skeleton_animation_list(
-  sprite: sprites,
-  list: ds_list<string>,
+  Sprite: Sprite,
+  list: DsList<string>
 ): void;
-declare function skeleton_skin_list(
-  sprite: sprites,
-  list: ds_list<string>,
-): void;
-declare function skeleton_bone_list(
-  sprite: sprites,
-  list: ds_list<string>,
-): void;
-declare function skeleton_slot_list(
-  sprite: sprites,
-  list: ds_list<string>,
-): void;
+declare function skeleton_skin_list(Sprite: Sprite, list: DsList<string>): void;
+declare function skeleton_bone_list(Sprite: Sprite, list: DsList<string>): void;
+declare function skeleton_slot_list(Sprite: Sprite, list: DsList<string>): void;
 declare function skeleton_slot_data(
-  sprite: sprites,
-  list: ds_list<ds_map<string, any>>,
+  Sprite: Sprite,
+  list: DsList<DsMap<string, any>>
 ): void;
 declare function skeleton_slot_data_instance(
-  list: ds_list<ds_map<string, any>>,
+  list: DsList<DsMap<string, any>>
 ): any;
 ////#endregion
