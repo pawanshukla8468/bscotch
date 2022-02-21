@@ -5,18 +5,42 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/vscode-extension"
+      ],
+      "outFiles": ["${workspaceFolder}/vscode-extension/dist/**/*.js"],
+      "preLaunchTask": "${defaultBuildTask}"
+    },
+    {
+      "name": "Extension Tests",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}/vscode-extension",
+        "--extensionTestsPath=${workspaceFolder}/vscode-extension/out/test/suite/index"
+      ],
+      "outFiles": [
+        "${workspaceFolder}/vscode-extension/out/**/*.js",
+        "${workspaceFolder}/vscode-extension/dist/**/*.js"
+      ],
+      "preLaunchTask": "tasks: watch-extension-tests"
+    },
+    {
       "type": "node",
       "request": "launch",
       "name": "Stitch Tests",
-      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "preLaunchTask": "npm: build",
+      "program": "${workspaceFolder}/vscode-extension/node_modules/mocha/bin/_mocha",
+      "preLaunchTask": "npm: build-extension",
       "args": [
         "--require",
         "source-map-support/register",
         "--timeout",
         "999999",
         "--colors",
-        "${workspaceFolder}/build/test/"
+        "${workspaceFolder}/vscode-extension/build/test/"
       ],
       "console": "internalConsole",
       "internalConsoleOptions": "neverOpen",

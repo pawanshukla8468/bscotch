@@ -12,3 +12,4 @@ package-lock.json
 docs/html
 helpdocs_keywords.json
 tsconfig.tsbuildinfo
+dist
